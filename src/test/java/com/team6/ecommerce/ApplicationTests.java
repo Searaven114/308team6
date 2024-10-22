@@ -1,4 +1,4 @@
-package com.team6.cs308_team6_ecommerce;
+package com.team6.ecommerce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
