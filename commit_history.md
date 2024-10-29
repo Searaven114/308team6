@@ -10,3 +10,10 @@
     > Configured application security
     
 </article>
+<h3>Commit 2</h3>
+<article>
+
+    > Completed Category related endpoints and service logic
+    > Completed Product related endpoints and service logic
+
+</article>
