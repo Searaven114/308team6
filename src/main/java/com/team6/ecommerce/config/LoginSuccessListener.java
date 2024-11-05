@@ -1,6 +1,7 @@
 package com.team6.ecommerce.config;
 
-import com.borau.cs308demo.user.User;
+
+import com.team6.ecommerce.user.User;
 import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationListener;
