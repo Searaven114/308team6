@@ -1,4 +1,4 @@
-package com.borau.cs308demo.comment;
+package com.team6.ecommerce.comment;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;
