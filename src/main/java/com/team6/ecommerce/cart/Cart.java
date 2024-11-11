@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
-@Document(collection = "carts")
+@Document
 public class Cart {
 
     @Id
