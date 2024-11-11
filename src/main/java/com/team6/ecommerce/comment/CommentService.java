@@ -1,7 +1,7 @@
-package com.borau.cs308demo.comment;
+package com.team6.ecommerce.comment;
 
-import com.borau.cs308demo.comment.dto.CommentDTO;
-import com.borau.cs308demo.product.ProductRepository;
+import com.team6.ecommerce.comment.dto.CommentDTO;
+import com.team6.ecommerce.product.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
