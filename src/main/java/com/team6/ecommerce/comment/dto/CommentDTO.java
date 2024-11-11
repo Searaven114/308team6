@@ -1,4 +1,4 @@
-package com.borau.cs308demo.comment.dto;
+package com.team6.ecommerce.comment.dto;
 
 import lombok.Data;
 
