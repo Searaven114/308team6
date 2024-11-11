@@ -1,8 +1,8 @@
-package com.borau.cs308demo.comment;
+package com.team6.ecommerce.comment;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.borau.cs308demo.comment.dto.CommentDTO;
-import com.borau.cs308demo.user.User;
+import com.team6.ecommerce.comment.dto.CommentDTO;
+import com.team6.ecommerce.user.User;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
