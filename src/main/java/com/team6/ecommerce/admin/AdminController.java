@@ -1,11 +1,8 @@
-package com.borau.cs308demo.admin;
+package com.team6.ecommerce.admin;
 
-import com.borau.cs308demo.order.Order;
-import com.borau.cs308demo.order.OrderService;
-import com.borau.cs308demo.order.OrderStatus;
-import com.borau.cs308demo.user.User;
-import com.borau.cs308demo.user.UserRepository;
-import com.borau.cs308demo.user.UserService;
+
+import com.team6.ecommerce.user.UserRepository;
+import com.team6.ecommerce.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -24,7 +21,7 @@ public class AdminController {
 
     private final UserRepository userRepo;
     private final UserService userService;
-    private final OrderService orderService;
+    //private final OrderService orderService;
 
 
 //    The user should be able to browse and purchase the products through the website.
@@ -37,21 +34,21 @@ public class AdminController {
     }
 
 
-    @GetMapping("/order/show-all-orders")
-    public ResponseEntity<?> getOrders( @RequestParam(name = "status", required = false) OrderStatus status){
+//    @GetMapping("/order/show-all-orders")
+//    public ResponseEntity<?> getOrders( @RequestParam(name = "status", required = false) OrderStatus status){
+//
+//        return ResponseEntity.ok().body( orderService.getAllOrdersAdmin( status ) );
+//
+//    }
 
-        return ResponseEntity.ok().body( orderService.getAllOrdersAdmin( status ) );
-
-    }
-
-    @GetMapping("/order/show-orders-by-userid/{id}")
-    public ResponseEntity<?> getOrdersById(
-            @PathVariable String id,
-            @RequestParam( name = "status", required = false) OrderStatus status)
-    {
-        List<Order> orders = orderService.getAllOrdersByUserIdAdmin( id, status );
-        return ResponseEntity.ok().body( orders );
-    }
+//    @GetMapping("/order/show-orders-by-userid/{id}")
+//    public ResponseEntity<?> getOrdersById(
+//            @PathVariable String id,
+//            @RequestParam( name = "status", required = false) OrderStatus status)
+//    {
+//        List<Order> orders = orderService.getAllOrdersByUserIdAdmin( id, status );
+//        return ResponseEntity.ok().body( orders );
+//    }
 
 //    @GetMapping("/users/{userId}")
 //    public User getUser(@PathVariable String userId) {
@@ -86,4 +83,3 @@ public class AdminController {
 
 
 }
-s
