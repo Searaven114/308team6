@@ -1,9 +1,12 @@
-package com.team6.ecommerce.util;
+package com.team6.ecommerce.config.populator;
 
 
 
 import com.github.javafaker.Faker;
 import com.team6.ecommerce.address.Address;
+import com.team6.ecommerce.category.CategoryRepository;
+import com.team6.ecommerce.distributor.DistributorRepository;
+import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.user.User;
 import com.team6.ecommerce.user.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -22,6 +25,9 @@ public class UserPopulator {
 
     private final UserRepository userRepo;
     private final BCryptPasswordEncoder encoder;
+    private final ProductRepository productRepo;
+    private final DistributorRepository distributorRepo;
+    private final CategoryRepository categoryRepo;
 
     private final Faker fake = new Faker();
 
