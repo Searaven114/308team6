@@ -25,19 +25,6 @@ public class UserController {
     private final UserRepository userRepo;
 
 
-
-
-//    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
-//        try {
-//            String response = userService.login(loginDTO);
-//            return ResponseEntity.ok().body(response);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-//        }
-//    }
-
-
     @PostMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegistrationDTO dto) {
         try {
