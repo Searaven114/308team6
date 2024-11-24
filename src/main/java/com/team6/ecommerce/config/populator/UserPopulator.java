@@ -1,7 +1,7 @@
 package com.team6.ecommerce.config.populator;
 
 
-
+/*
 import com.github.javafaker.Faker;
 import com.team6.ecommerce.address.Address;
 import com.team6.ecommerce.category.CategoryRepository;
@@ -112,4 +112,4 @@ public class UserPopulator {
         userRepo.saveAll(users);
 
     }
-}
+}*/

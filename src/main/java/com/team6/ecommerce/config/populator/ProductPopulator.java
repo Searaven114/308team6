@@ -13,6 +13,8 @@ import com.team6.ecommerce.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,7 @@ import java.util.Optional;
 @Log4j2
 @AllArgsConstructor
 @Component
+@DependsOn({"categoryPopulator", "distributorPopulator"})
 public class ProductPopulator {
 
     private final UserRepository userRepo;

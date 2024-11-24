@@ -22,14 +22,13 @@ public class Cart {
 
     //private User user;
 
-    @Nonnull
     private String userId;
 
     private List<CartItem> cartItems = new ArrayList<>();
 
     private Double TotalPrice;
 
-    public Cart(@Nonnull String userId, List<CartItem> cartItems) {
+    public Cart(String userId, List<CartItem> cartItems) {
         this.userId = userId;
         this.cartItems = cartItems;
     }

@@ -8,6 +8,7 @@ import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
