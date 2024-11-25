@@ -58,13 +58,13 @@ public class CartService {
 
 
     public Cart fetchUserCart(String userId) {
-        log.info("[CartService] Fetching cart for userId: {}", userId);
+        log.info("[CartService][fetchUserCart] Fetching cart for userId: {}", userId);
 
         // Fetch the cart
         Optional<Cart> cartOpt = cartRepo.findByUserId(userId);
 
         if (cartOpt.isEmpty()) {
-            log.info("[CartService] No cart found for userId: {}", userId);
+            log.info("[CartService][fetchUserCart] No cart found for userId: {}", userId);
 
             // Create a new cart if none exists
             Cart newCart = new Cart();
@@ -76,7 +76,7 @@ public class CartService {
         }
 
         Cart cart = cartOpt.get();
-        log.info("[CartService] Cart retrieved: {}", cart);
+        log.info("[CartService][fetchUserCart] Cart retrieved: {}", cart);
         recalculateTotalPrice(cart); // Ensure the total price is accurate
 
         log.info("Returned Cart is {}", cart.toString());
@@ -341,6 +341,60 @@ public class CartService {
     }
 
 
+
+
+
+
+    public String validateCartItems(String userId) {
+        // Validate userId
+        if (userId == null || userId.isEmpty()) {
+            log.error("[CartService][validateCartItems] Invalid userId provided: {}", userId);
+            throw new UserNotFoundException("User ID cannot be null or empty");
+        }
+
+        // Fetch the cart for the user
+        Optional<Cart> cartOpt = cartRepo.findByUserId(userId);
+        if (cartOpt.isEmpty()) {
+            log.info("[CartService][validateCartItems] Cart not found for userId: {}", userId);
+            return null; // No cart to validate
+        }
+
+        Cart cart = cartOpt.get();
+
+        // Initialize a message for removed items
+        StringBuilder messageBuilder = new StringBuilder();
+        List<CartItem> validItems = new ArrayList<>();
+
+        for (CartItem cartItem : cart.getCartItems()) {
+            Product product = cartItem.getProduct();
+
+            if (product.getQuantityInStock() <= 0) {
+                log.info("[CartService][validateCartItems] Removing product {} from cart for userId {} as it is out of stock.", product.getId(), userId);
+                messageBuilder.append(String.format("'%s' is out of stock. ", product.getTitle()));
+                continue;
+            }
+
+            if (cartItem.getQuantity() > product.getQuantityInStock()) {
+                log.info("[CartService][validateCartItems] Removing product {} from cart for userId {} as it exceeds available stock.", product.getId(), userId);
+                messageBuilder.append(String.format("'%s' exceeds available stock. ", product.getTitle()));
+                continue;
+            }
+
+            validItems.add(cartItem);
+        }
+
+        // Update the cart with only valid items
+        cart.setCartItems(validItems);
+        recalculateTotalPrice(cart);
+        cartRepo.save(cart);
+
+        // Return the removal message if any items were removed
+        String message = messageBuilder.toString();
+        if (!message.isEmpty()) {
+            log.info("[CartService][validateCartItems] Removed items message: {}", message);
+        }
+        return message.isEmpty() ? null : message;
+    }
 
 
 

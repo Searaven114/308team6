@@ -18,6 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
@@ -70,7 +72,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"status\":\"failure\",\"message\":\"Invalid username or password.\"}");
                         })
                 )
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .httpBasic(withDefaults()) // Enable HTTP Basic Authentication
                 .build();
     }
 

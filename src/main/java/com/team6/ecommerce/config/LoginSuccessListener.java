@@ -1,7 +1,9 @@
 package com.team6.ecommerce.config;
 
 
+import com.team6.ecommerce.cart.CartService;
 import com.team6.ecommerce.user.User;
+import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationListener;
@@ -11,25 +13,30 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Log4j2
+@AllArgsConstructor
 @Component
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
+
+    private final CartService cartService;
+
 
 
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
-
         Authentication auth = event.getAuthentication();
-        User user = (User) auth.getPrincipal();
 
-        log.info("[LoginSuccessListener] User {} is Successfully logged in.", user.getUsername());
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User) {
+            User user = (User) auth.getPrincipal();
+            log.info("[LoginSuccessListener] User {} logged in. Validating their cart.", user.getEmail());
 
-        /*
-         NOT: KULLANICI HER GİRİŞ YAPTIĞINDA, EĞER BİR CART'I VARSA O CARTI TARANACAK VE CARTINDAKİ ÜRÜNLERDEN HERHANGİ BİRİ SİTEDE
-         TÜKENMİŞ YADA CARTTAKİ ADETİ SAĞLAYAMAMIŞ DURUMDA OLURSA O ÜRÜN CARTTAN SİLİNECEK VE KULLANICIYA BİR MESAJ YOLLANACAK
-         "Due to stock changes, some items were removed from your cart" DİYE.
-        */
+            // Validate cart items
+            String message = cartService.validateCartItems(user.getId());
 
-        //Burada ayrıca cart merging logic'i de execute edilebilir.
+            if (message != null) {
+                log.info("[LoginSuccessListener] Cart validation message for user {}: {}", user.getId(), message);
 
+                // Zaman kalırsa burada kullanıcıye bildirim gönderilme logic i implemente edilir, cartından item sildigini beyan etmen gerekir.
+            }
+        }
     }
 }
