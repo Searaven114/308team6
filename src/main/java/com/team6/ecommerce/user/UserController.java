@@ -25,8 +25,16 @@ public class UserController {
     private final UserRepository userRepo;
 
 
-    @PostMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/user/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegistrationDTO dto) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            log.warn("[UserController][registerUser] Attempt to register while already logged in by user: {}", authentication.getName());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logged-in users cannot register.");
+        }
+
         try {
             UserResponseDTO response = userService.registerUser(dto);
             return ResponseEntity.ok().body(response);
@@ -47,7 +55,7 @@ public class UserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
                 authentication.getAuthorities().forEach(authority -> {
-                    log.debug("Authority: " + authority.getAuthority());
+                    log.info("Authority: " + authority.getAuthority());
                 });
             }
 
@@ -75,7 +83,7 @@ public class UserController {
 //    }
 
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/user/delete")
     public ResponseEntity<?> deleteOwnProfile() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

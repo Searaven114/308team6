@@ -23,6 +23,13 @@ public class Order {
     private Date createdAt;
     private Long total;
 
+    public Order(String userId, Cart cart, OrderStatus orderStatus, Date createdAt, Long total) {
+        this.userId = userId;
+        this.cart = cart;
+        this.orderStatus = orderStatus;
+        this.createdAt = createdAt;
+        this.total = total;
+    }
 }
 
 

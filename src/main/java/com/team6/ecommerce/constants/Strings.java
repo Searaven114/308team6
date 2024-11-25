@@ -11,4 +11,8 @@ public class Strings {
     public static final String PRODUCT_AMOUNT_IN_CART_EXCEEDS_THE_AVAILABLE_QUANTITY = "Product amount exceeds available quantity.";
     public static final String CART_IS_EMPTY = "Cart is already empty.";
     public static final String CART_HAS_BEEN_CLEARED = "Cart has been successfully cleared.";
+    public static final String PRODUCT_NOT_IN_CART = "Product is not in your cart.";
+    public static final String CART_UPDATED_SUCCESSFULLY = "Cart updated successfully.";
+    public static final String USER_NOT_FOUND = "User not found.";
+
 }

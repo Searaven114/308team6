@@ -20,7 +20,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @Secured({"ROLE_ADMIN"})
+    //@Secured({"ROLE_ADMIN"})
     @GetMapping("/get-all-products")
     public ResponseEntity<?> getAllProducts(){
 

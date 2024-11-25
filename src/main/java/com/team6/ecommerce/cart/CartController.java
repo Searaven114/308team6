@@ -88,7 +88,6 @@ public class CartController {
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-    /* HENÜZ LOGINSIZ CARTA EKLEME FONKSIYONALİTESİ İMPLEMENTE EDİLMEDİ */
     @PostMapping("/cart/add")
     public ResponseEntity<String> addProductToCart(@RequestParam String productId, @RequestParam int quantity) {
 
@@ -137,6 +136,100 @@ public class CartController {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
+    @PutMapping("/update-quantity")
+    public ResponseEntity<String> updateCartItemQuantity(@RequestParam String productId, @RequestParam int quantity) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            log.warn("[CartController][updateCartItemQuantity] Unauthorized access attempt.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+        }
+
+        if (!(auth.getPrincipal() instanceof User)) {
+            log.warn("[CartController][updateCartItemQuantity] Invalid principal type.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
+        }
+
+        User user = (User) auth.getPrincipal();
+
+        String result = cartService.updateCartItemQuantity(user.getId(), productId, quantity);
+
+        if (Strings.CART_IS_EMPTY.equals(result)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
+
+        } else if (Strings.PRODUCT_NOT_IN_CART.equals(result)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+
+        } else if (result.startsWith(String.format(Strings.PRODUCT_NOT_AVAILABLE_IN_REQUESTED_QUANTITY, 0))) {
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<String> removeProductFromCart(@RequestParam String productId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the authentication object is null or not authenticated
+        if (auth == null || !auth.isAuthenticated()) {
+            log.warn("[CartController][removeProductFromCart] Unauthorized access attempt: No authentication found or user not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+        }
+
+        // Ensure that the principal is of type User
+        if (!(auth.getPrincipal() instanceof User)) {
+            log.warn("[CartController][removeProductFromCart] Unauthorized access attempt: Invalid principal type for user: {}", auth.getPrincipal());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
+        }
+
+        // Cast the principal to the User class
+        User user = (User) auth.getPrincipal();
+
+        // Double-check if the user object is null
+        if (user == null) {
+            log.error("[CartController][removeProductFromCart] Unexpected error: Authenticated principal is null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authenticated user not found");
+        }
+
+        // Call the service to remove the product
+        String result = cartService.removeItemFromUserCart(user.getId(), productId);
+
+        if (result.equals(Strings.PRODUCT_NOT_IN_CART)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    //todo
+    @PostMapping("/checkout")
+    public ResponseEntity<String> checkout() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            log.warn("[CartController][Checkout] Unauthorized access attempt.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+        }
+
+        if (!(auth.getPrincipal() instanceof User)) {
+            log.warn("[CartController][Checkout] Invalid principal type.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
+        }
+
+        User user = (User) auth.getPrincipal();
+
+        String result = cartService.checkout(user.getId());
+
+        if (Strings.CART_IS_EMPTY.equals(result)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
 
 
 

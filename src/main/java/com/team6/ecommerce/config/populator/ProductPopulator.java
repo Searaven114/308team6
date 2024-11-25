@@ -67,20 +67,20 @@ public class ProductPopulator {
             )));
 
 
-
         monitorCat.ifPresent(category -> products.add(new Product(
                 "2",
-                "Dell UltraSharp Monitor",
+                "Alienware AW2723DF",
                 monitorCat.get().getId(),
-                "Dell",
-                "U2720Q",
-                "D273928Q",
-                "27-inch 4K monitor with vibrant colors and sharp details, ideal for productivity and media consumption.",
+                "Alienware",
+                "AW2723DF",
+                "AW2723DF123",
+                "27-inch QHD monitor with a 360Hz refresh rate, QD-OLED technology and 0.03ms response time.",
                 0,
-                550.99,
+                749.99,
                 true,
                 "2"
         )));
+
 
         laptopCat.ifPresent(category -> products.add(new Product(
                 "3",

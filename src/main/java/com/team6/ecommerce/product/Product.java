@@ -18,16 +18,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Product {
 
     @Id
-    private String id; //6701927e78c5a70ef8d3a4e4
+    private String id;
 
     @Indexed(unique = true)
     @NotBlank
     @Size(min = 3, message = "Product name must contain atleast 3 characters")
-    private String title; //Asus VG259QM Monitor
+    private String title;
 
     @Indexed(unique = true)
     @NotBlank
-    private String categoryId; // Reference to the category ID instead of the Category object
+    private String categoryId;
 
     @NotBlank
     private String brand;
