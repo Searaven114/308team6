@@ -1,6 +1,10 @@
 package com.team6.ecommerce.cart;
 import com.team6.ecommerce.cartitem.CartItem;
 import com.team6.ecommerce.constants.Strings;
+import com.team6.ecommerce.invoice.Invoice;
+import com.team6.ecommerce.invoice.InvoiceService;
+import com.team6.ecommerce.notification.NotificationService;
+import com.team6.ecommerce.payment.dto.PaymentRequest;
 import com.team6.ecommerce.user.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -10,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @AllArgsConstructor
 @RestController
 @Log4j2
@@ -17,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
 
     private final CartService cartService;
+    private final InvoiceService invoiceService;
+    private final NotificationService notificationService;
 
 
 
@@ -168,6 +176,7 @@ public class CartController {
         return ResponseEntity.ok(result);
     }
 
+    //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeProductFromCart(@RequestParam String productId) {
@@ -205,9 +214,11 @@ public class CartController {
     }
 
 
-    //todo
+    //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
+
+
     @PostMapping("/checkout")
-    public ResponseEntity<String> checkout() {
+    public ResponseEntity<?> checkout(/*@RequestBody PaymentRequest paymentRequest*/) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated()) {
@@ -222,13 +233,32 @@ public class CartController {
 
         User user = (User) auth.getPrincipal();
 
-        String result = cartService.checkout(user.getId());
+        String result = cartService.checkout(user.getId()/*,paymentRequest*/);
 
         if (Strings.CART_IS_EMPTY.equals(result)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
         }
 
-        return ResponseEntity.ok(result);
+        // Check if result contains the "Invoice" keyword
+        if (result.startsWith("Invoice")) {
+
+            String invoiceId = result.split(" ")[1]; // Extract invoice ID
+
+            Optional<Invoice> invoiceOpt = invoiceService.getInvoiceById(invoiceId); // Assume a service method to fetch invoice
+
+            if (invoiceOpt.isPresent()) {
+                Invoice invoice = invoiceOpt.get();
+                invoice.setId(user.getEmail());
+                notificationService.notifyUserWithInvoice(invoice);
+                return ResponseEntity.ok(invoiceOpt.get());
+            } else {
+                log.error("[CartController][Checkout] Invoice ID {} not found", invoiceId);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving invoice");
+            }
+        }
+
+        //this is the case in which the returned string doesnt match with any if cases which indicates an error.
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Strings.CART_ERROR);
     }
 
 

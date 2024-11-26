@@ -60,8 +60,8 @@ public class DataPopulator {
                 new User("salesmanager", encoder.encode("salespw"), "sales@example.com", fake.phoneNumber().phoneNumber()),
                 new User("productmanager", encoder.encode("productpw"), "product@example.com", fake.phoneNumber().phoneNumber()),
                 new User("customer1", encoder.encode("customerpw"), "customer1@example.com", fake.phoneNumber().phoneNumber()),
-                new User("customer2", encoder.encode("customerpw"), "customer2@example.com", fake.phoneNumber().phoneNumber()),
-                new User("customer3", encoder.encode("customerpw"), "customer3@example.com", fake.phoneNumber().phoneNumber())
+                new User("customer2", encoder.encode("customerpw"), "ranaerkan@sabanciuniv.edu", fake.phoneNumber().phoneNumber()),
+                new User("customer3", encoder.encode("customerpw"), "d4rk1253@gmail.com", fake.phoneNumber().phoneNumber())
         );
 
         for (User user : users) {

@@ -8,6 +8,9 @@ import com.team6.ecommerce.invoice.InvoiceRepository;
 import com.team6.ecommerce.order.Order;
 import com.team6.ecommerce.order.OrderRepository;
 import com.team6.ecommerce.order.OrderStatus;
+import com.team6.ecommerce.payment.PaymentService;
+import com.team6.ecommerce.payment.dto.PaymentRequest;
+import com.team6.ecommerce.payment.dto.PaymentResponse;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.user.User;
@@ -32,6 +35,7 @@ public class CartService {
     private final CartRepository cartRepo;
     private final OrderRepository orderRepo;
     private final InvoiceRepository invoiceRepo;
+    private final PaymentService paymentService;
 
     private void recalculateTotalPrice(Cart cart) {
         double totalPrice = cart.getCartItems().stream()
@@ -284,7 +288,7 @@ public class CartService {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-    public String checkout(String userId) {
+    public String checkout(String userId/*, PaymentRequest paymentRequest*/) {
 
         // Validate the presence of user
         if (userId == null || userId.isEmpty()) {
@@ -301,6 +305,31 @@ public class CartService {
         }
 
         Cart cart = cartOpt.get();
+
+        // Step 1: Simulate Payment
+        /*log.info("[CartService][Checkout] Simulating payment for userId: {}", userId);
+        PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
+
+        if (!paymentResponse.isSuccess()) {
+            log.error("[CartService][Checkout] Payment failed: {}", paymentResponse.getMessage());
+            throw new RuntimeException("Payment failed: " + paymentResponse.getMessage());
+        }*/
+
+        // Deduct product stock
+        // carta eklerken zaten stock checking yaptıgını varsayıyoruz fakat yinede runtimeexception throwluyor nolur nolmaz
+        for (CartItem item : cart.getCartItems()) {
+            Product product = productRepo.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProduct().getId()));
+
+            if (product.getQuantityInStock() < item.getQuantity()) {
+                log.error("[CartService][Checkout] Not enough stock for product: {}", product.getTitle());
+                throw new RuntimeException("Not enough stock for product: " + product.getTitle());
+            }
+
+            product.setQuantityInStock(product.getQuantityInStock() - item.getQuantity());
+            product.setPopularityPoint(product.getPopularityPoint() + 1);
+            productRepo.save(product);
+        }
 
         // Create Order
         Order order = Order.builder()
@@ -337,12 +366,11 @@ public class CartService {
 
         log.info("[CartService][Checkout] Cart cleared for userId: {}", userId);
 
-        return String.format("Order placed successfully. Invoice ID: %s", invoice.getId());
+        return String.format("Invoice %s", invoice.getId());
     }
 
 
-
-
+    //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
     public String validateCartItems(String userId) {

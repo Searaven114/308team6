@@ -5,12 +5,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @AllArgsConstructor
@@ -19,6 +17,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductRepository productRepo;
 
     //@Secured({"ROLE_ADMIN"})
     @GetMapping("/get-all-products")
@@ -83,6 +82,35 @@ public class ProductController {
 
         Page<Product> products = productService.searchProducts(query, page, size);
         return ResponseEntity.ok(products);
+    }
+
+
+
+    @GetMapping("/product/{name}")
+    public ResponseEntity<Product> getProduct(@PathVariable String name) {
+
+        Optional<Product> productOpt = productRepo.findByTitleIgnoreCase(name);
+
+        if ( productOpt.isEmpty() ){
+            log.info("Product ({}) not found", name);
+            return ResponseEntity.notFound().build();
+        }
+
+        Product product = productOpt.get();
+
+        return ResponseEntity.ok(product);
+
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductById(@PathVariable String id) {
+        Optional<Product> productOpt = productRepo.findById(id);
+
+        if (productOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Product with ID " + id + " not found.");
+        }
+
+        return ResponseEntity.ok(productOpt.get());
     }
 
 

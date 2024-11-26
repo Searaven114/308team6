@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
@@ -35,6 +36,8 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
 
     boolean findByTitle(String title);
+
+    Optional<Product> findByTitleIgnoreCase(String title);
 
     boolean existsByTitle(String title);
 

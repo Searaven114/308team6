@@ -6,6 +6,7 @@ import com.team6.ecommerce.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -30,74 +31,6 @@ public class OrderService {
     private final OrderRepository orderRepo;
     private final UserService userService;
 
-    //private static CartService cartService;
-
-//    private void refund ( String userId, String OrderId){
-//
-//    }
-
-
-//    public OrderResponse createOrder(HttpServletRequest request){
-//        long total = 0;
-//        User user = getUserByToken(request, jwtService, this.userRepository);
-//        Cart cart = this.cartRepository.findByUserId(user.getId());
-//        Calendar calendar = Calendar.getInstance();
-//
-//        if(cart.getCartItems() == null)
-//            throw new RuntimeException("Can not create order with empty cart");
-//
-//        for(CartItem cartItem : cart.getCartItems()){
-//            total = (long) cartItem.getQuantity() * cartItem.getProduct().getPrice();
-//        }
-//
-//        Order savedOrder = this.orderRepository.save(
-//                Order.builder()
-//                        .orderStatus(OrderStatus.PENDING)
-//                        .cart(cart)
-//                        .createdAt(calendar.getTime())
-//                        .orderStatus(OrderStatus.PENDING)
-//                        .processedAt(null)
-//                        .total(total)
-//                        .build()
-//        );
-//
-//
-//        CartResponse cartResponse = CartResponse.builder()
-//                .id(savedOrder.getCart().getId())
-//                .user(
-//                        LoggedUserResponse.builder()
-//                                .id(savedOrder.getCart().getUser().getId())
-//                                .firstname(savedOrder.getCart().getUser().getFirstName())
-//                                .lastname(savedOrder.getCart().getUser().getLastName())
-//                                .email(savedOrder.getCart().getUser().getEmail())
-//                                .mobileNumber(savedOrder.getCart().getUser().getMobileNumber())
-//                                .build()
-//                )
-//                .cartItems(savedOrder.getCart().getCartItems())
-//                .build();
-//
-//        //clear cart once order is creates
-//        this.cartRepository.delete(cart);
-//        return OrderResponse.builder()
-//                .id(savedOrder.getId())
-//                .cart(cartResponse)
-//                .orderStatus(savedOrder.getOrderStatus())
-//                .createdAt(savedOrder.getCreatedAt())
-//                .total(savedOrder.getTotal())
-//                .processedAt(savedOrder.getProcessedAt())
-//                .build();
-//    }
-
-
-    public String createOrder(String user_id){
-
-
-        //Cart boş mu degil mi checki, boş ise order yapamaz.
-
-        return "" ;
-    }
-
-
 
     @Secured({"ROLE_ADMIN"})
     public List<Order> getAllOrdersAdmin( OrderStatus orderStatus){
@@ -116,26 +49,72 @@ public class OrderService {
     }
 
 
+    @Scheduled(fixedRate = 60000) // Runs every 1 minute
+    public void simulateOrderStatus() {
+        log.info("[OrderService][simulateOrderStatus] Starting order status simulation...");
+
+        // Fetch all orders with status 'PROCESSING'
+        List<Order> processingOrders = orderRepo.findAllByOrderStatus(OrderStatus.PROCESSING);
+
+        for (Order order : processingOrders) {
+            log.info("[OrderService][simulateOrderStatus] Updating order ID: {} from PROCESSING to IN_TRANSIT", order.getId());
+
+            // Update the status
+            order.setOrderStatus(OrderStatus.IN_TRANSIT);
+
+            // Save the updated order
+            orderRepo.save(order);
+
+            log.info("[OrderService][simulateOrderStatus] Order ID: {} successfully updated to IN_TRANSIT", order.getId());
+        }
+
+        log.info("[OrderService][simulateOrderStatus] Simulation completed.");
+    }
 
 
 
+    @Scheduled(fixedRate = 180000) // Runs every 3 minutes
+    public void simulateDeliveryStatus() {
+        log.info("[OrderService][simulateDeliveryStatus] Starting delivery status simulation...");
 
+        // Fetch all orders with status 'IN_TRANSIT'
+        List<Order> inTransitOrders = orderRepo.findAllByOrderStatus(OrderStatus.IN_TRANSIT);
 
+        for (Order order : inTransitOrders) {
+            log.info("[OrderService][simulateDeliveryStatus] Updating order ID: {} from IN_TRANSIT to DELIVERED", order.getId());
 
+            // Update the status
+            order.setOrderStatus(OrderStatus.DELIVERED);
 
+            // Save the updated order
+            orderRepo.save(order);
 
+            log.info("[OrderService][simulateDeliveryStatus] Order ID: {} successfully updated to DELIVERED", order.getId());
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
+        log.info("[OrderService][simulateDeliveryStatus] Delivery simulation completed.");
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

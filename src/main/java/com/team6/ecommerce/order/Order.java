@@ -15,6 +15,7 @@ import java.util.Date;
 @ToString
 @Document(collection = "orders")
 public class Order {
+
     @Id
     private String id;
     private String userId;

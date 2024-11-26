@@ -14,5 +14,5 @@ public class Strings {
     public static final String PRODUCT_NOT_IN_CART = "Product is not in your cart.";
     public static final String CART_UPDATED_SUCCESSFULLY = "Cart updated successfully.";
     public static final String USER_NOT_FOUND = "User not found.";
-
+    public static final Object CART_ERROR = "Unexpected error occurred during checkout";
 }
