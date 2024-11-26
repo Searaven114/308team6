@@ -2,13 +2,13 @@ package com.team6.ecommerce.comment;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 
-// KAİDE -> "All ratings are accompanied by comments."
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,5 +42,12 @@ public class Comment {
         this.content = content;
         this.rating = rating;
     }
-}
 
+    public Comment(String productId, String userId, String content, int rating, boolean approved) {
+        this.productId = productId;
+        this.userId = userId;
+        this.content = content;
+        this.rating = rating;
+        this.approved = approved;
+    }
+}

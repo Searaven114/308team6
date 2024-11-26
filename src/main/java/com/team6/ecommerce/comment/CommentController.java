@@ -1,3 +1,4 @@
+
 package com.team6.ecommerce.comment;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -66,12 +67,12 @@ public class CommentController {
         User user = (User) auth.getPrincipal();
         Set<String> user_roles = user.getRoles();
 
-        if (user_roles.contains("ROLE_ADMIN")) {
+        if (user_roles.contains("ROLE_PRODUCTMANAGER")) {
             return commentService.getAllCommentsForProduct(productId);
 
         }
         else {
-            throw new AccessDeniedException("Only admins can view comments.");
+            throw new AccessDeniedException("Only product managers can view comments that are not approved yet.");
         }
     }
 
@@ -85,13 +86,13 @@ public class CommentController {
         User user = (User) auth.getPrincipal();
         Set<String> user_roles = user.getRoles();
 
-        if (user_roles.contains("ROLE_ADMIN")) {
+        if (user_roles.contains("ROLE_PRODUCTMANAGER")) {
             commentService.approveComment(dto.getCommentId());
             return null;
         }
 
         else {
-            throw new AccessDeniedException("Only admins can approve comments.");
+            throw new AccessDeniedException("Only product managers can approve comments.");
         }
 
 
