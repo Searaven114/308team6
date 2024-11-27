@@ -6,21 +6,27 @@ import com.team6.ecommerce.cart.CartService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CartServiceTest {
+public class FetchExistingCartTest {
 
     @Test
-    public void testFetchUserCart_WhenCartDoesNotExist() {
+    public void testFetchUserCart_WhenCartExists() {
         // Arrange
-        String userId = "test-user-id";
+        String userId = "existing-user-id";
         CartRepository cartRepository = mock(CartRepository.class);
 
-        // Simulate no cart found in repository
-        when(cartRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        // Mock existing cart
+        Cart existingCart = new Cart();
+        existingCart.setUserId(userId);
+        existingCart.setCartItems(new ArrayList<>());
+        existingCart.setTotalPrice(50.0);
+
+        when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(existingCart));
 
         CartService cartService = new CartService(
                 null, // Mocked UserService
@@ -39,10 +45,9 @@ public class CartServiceTest {
         // Assert
         assertNotNull(resultCart, "Cart should not be null");
         assertEquals(userId, resultCart.getUserId(), "Cart userId should match the provided userId");
-        assertTrue(resultCart.getCartItems().isEmpty(), "Cart should be empty initially");
-        assertEquals(0.0, resultCart.getTotalPrice(), "Total price should be 0.0 for a new cart");
+        assertEquals(50.0, resultCart.getTotalPrice(), "Total price should match the existing cart's total price");
 
-        // Verify a new cart was saved
-        verify(cartRepository, times(1)).save(any(Cart.class));
+        // Verify no new cart was saved
+        verify(cartRepository, never()).save(any(Cart.class));
     }
 }
