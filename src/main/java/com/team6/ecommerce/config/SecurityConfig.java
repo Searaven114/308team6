@@ -29,51 +29,79 @@ public class SecurityConfig {
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS with configuration
-                .authorizeHttpRequests(req -> {
-                    req
-                            .requestMatchers("/login", "/api/user", "/api/user/profile", "/", "/index", "/error", "/api/user")
-                            .permitAll()
-                            .requestMatchers("/api/user/register")
-                            .anonymous() // Restricting /register to unauthenticated users only
-                            .requestMatchers("/api/admin/**")
-                            .hasRole("ADMIN")
-                            .requestMatchers("/api/pm/**")
-                            .hasAnyRole("ADMIN", "PRODUCTMANAGER")
-                            .requestMatchers("/api/sm/**")
-                            .hasAnyRole("ADMIN", "SALESMANAGER")
-                            .requestMatchers("/actuator/**", "/startup-report")
-                            .hasRole("ADMIN")
-                            .requestMatchers(
-                                    "/swagger-ui/**",
-                                    "/swagger-ui.html",
-                                    "/v3/api-docs/**",
-                                    "/v2/api-docs/**"
-                            ).permitAll()
-                            .requestMatchers("/error")
-                            .permitAll()
-                            .anyRequest().authenticated();
-                })
-                .sessionManagement(session -> {
-                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-                })
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers(publicEndpoints()).permitAll() // Group public endpoints
+                        .requestMatchers(anonymousEndpoints()).anonymous() // Group anonymous-only endpoints
+                        .requestMatchers(adminEndpoints()).hasRole("ADMIN") // Admin-only endpoints
+                        .requestMatchers(productManagerEndpoints()).hasAnyRole("ADMIN", "PRODUCTMANAGER") // Product manager endpoints
+                        .requestMatchers(salesManagerEndpoints()).hasAnyRole("ADMIN", "SALESMANAGER") // Sales manager endpoints
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form
                         .loginProcessingUrl("/login") // Customize login endpoint
                         .successHandler((request, response, authentication) -> {
-                            // Return a JSON response on successful login
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.setContentType("application/json");
                             response.getWriter().write("{\"status\":\"success\",\"message\":\"Login successful!\"}");
                         })
                         .failureHandler((request, response, exception) -> {
-                            // Return a JSON response on failed login
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
                             response.getWriter().write("{\"status\":\"failure\",\"message\":\"Invalid username or password.\"}");
                         })
                 )
-                .httpBasic(withDefaults()) // Enable HTTP Basic Authentication
+                .httpBasic(withDefaults())
                 .build();
+    }
+
+
+    private String[] publicEndpoints() {
+        return new String[]{
+                "/login",
+                "/api/user",
+                "/api/user/profile",
+                "/",
+                "/index",
+                "/error",
+                "/api/product/**",
+                "/api/comments/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+                "/v2/api-docs/**"
+        };
+    }
+
+
+    private String[] anonymousEndpoints() {
+        return new String[]{
+                "/api/user/register"
+        };
+    }
+
+
+    private String[] adminEndpoints() {
+        return new String[]{
+                "/api/admin/**",
+                "/actuator/**",
+                "/startup-report"
+        };
+    }
+
+
+    private String[] productManagerEndpoints() {
+        return new String[]{
+                "/api/pm/**"
+        };
+    }
+
+
+    private String[] salesManagerEndpoints() {
+        return new String[]{
+                "/api/sm/**"
+        };
     }
 
     @Bean

@@ -53,9 +53,7 @@ public class SalesManagerController {
 
             Product updatedProduct = productService.updateProductPrice(id, price);
 
-            //TODO BURADA NOTIFICATION SERVİSİNİN ÇAĞRILMASI LAZIM FIYAT DEGISIMINI HABER ETMEK ICIN
             //notificationService.notifyUsersAboutPriceChange(...);
-
 
             return ResponseEntity.ok(updatedProduct);
 

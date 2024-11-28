@@ -1,5 +1,6 @@
 package com.team6.ecommerce.payment;
 
+import com.team6.ecommerce.constants.Strings;
 import com.team6.ecommerce.payment.dto.PaymentRequest;
 import com.team6.ecommerce.payment.dto.PaymentResponse;
 import lombok.extern.log4j.Log4j2;
@@ -12,19 +13,19 @@ public class BankService {
     public PaymentResponse processPayment(PaymentRequest paymentRequest) {
         log.info("[BankService] Processing payment for card: {}", paymentRequest.getCardNumber());
 
-        // Mock card validation
+        //card validation
         if (!isValidCard(paymentRequest.getCardNumber())) {
-            return new PaymentResponse(false, "Payment failed: Invalid card details");
+            return new PaymentResponse(false, Strings.PAYMENT_FAILED_INVALID_CARD_DETAILS);
         }
 
         // Simulate payment processing
         boolean sufficientFunds = simulateSufficientFunds();
         if (!sufficientFunds) {
-            return new PaymentResponse(false, "Payment failed: Insufficient funds");
+            return new PaymentResponse(false, Strings.PAYMENT_FAILED_INSUFFICIENT_FUNDS);
         }
 
         // If all checks pass, return success
-        return new PaymentResponse(true, "Payment successful");
+        return new PaymentResponse(true, Strings.PAYMENT_SUCCESSFUL);
     }
 
     private boolean isValidCard(String cardNumber) {
@@ -33,8 +34,8 @@ public class BankService {
     }
 
     private boolean simulateSufficientFunds() {
-        // Simulate random outcome (e.g., 70% success, 30% failure)
-        return Math.random() > 0.3;
+        // Simulate random outcome (e.g., 80% success, 20% failure)
+        return Math.random() > 0.2;
     }
 }
 

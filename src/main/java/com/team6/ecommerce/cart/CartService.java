@@ -10,6 +10,7 @@ import com.team6.ecommerce.order.OrderRepository;
 import com.team6.ecommerce.order.OrderStatus;
 import com.team6.ecommerce.payment.PaymentService;
 import com.team6.ecommerce.payment.dto.PaymentRequest;
+import com.team6.ecommerce.payment.dto.PaymentRequestDTO;
 import com.team6.ecommerce.payment.dto.PaymentResponse;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
@@ -44,21 +45,6 @@ public class CartService {
                 .sum();
         cart.setTotalPrice(totalPrice);
     }
-
-
-
-
-
-    /*
-     *  - Retreive Cart TAMAM
-     *  - Add product to cart BITMEK UZERE
-     *  - Remove product from cart
-     *  - Clear the cart TAMAM
-     *  - Checkout? yada order -> checkoutta mesela addressi olması lazım tamamlanması icin, address yoksa kullanıcıya bildirim gitmeli adresin yok diye.
-     *  - (ileri seviye) Check Stock Availability -> cart'a ekledigi urunlere 4 ay sonra gelip baktıgında illa stok durumu farklı olacaktır, belirli bir işlem/sürede tetiklenen bu fonksiyon,
-     *       cartta stogu bitmis urun olunca carrtan otomatik olarak çıkartmalı o ürünü ve (We have removed x, y and z due to no stock available) gibi bir mesaj döndürmeli.
-     *
-     */
 
 
     public Cart fetchUserCart(String userId) {
@@ -288,7 +274,7 @@ public class CartService {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-    public String checkout(String userId/*, PaymentRequest paymentRequest*/) {
+    public String checkout(String userId, PaymentRequestDTO dto) {
 
         // Validate the presence of user
         if (userId == null || userId.isEmpty()) {
@@ -307,13 +293,20 @@ public class CartService {
         Cart cart = cartOpt.get();
 
         // Step 1: Simulate Payment
-        /*log.info("[CartService][Checkout] Simulating payment for userId: {}", userId);
+        log.info("[CartService][Checkout] Simulating payment for userId: {}", userId);
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .totalAmount(cart.getTotalPrice().longValue())
+                .cardExpiry(dto.getCardExpiry())
+                .cvv(dto.getCvv())
+                .cardNumber(dto.getCardNumber())
+                .build();
+
         PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
 
         if (!paymentResponse.isSuccess()) {
             log.error("[CartService][Checkout] Payment failed: {}", paymentResponse.getMessage());
-            throw new RuntimeException("Payment failed: " + paymentResponse.getMessage());
-        }*/
+            return paymentResponse.getMessage();
+        }
 
         // Deduct product stock
         // carta eklerken zaten stock checking yaptıgını varsayıyoruz fakat yinede runtimeexception throwluyor nolur nolmaz

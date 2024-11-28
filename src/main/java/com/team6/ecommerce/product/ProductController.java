@@ -1,5 +1,7 @@
 package com.team6.ecommerce.product;
 
+import com.team6.ecommerce.category.Category;
+import com.team6.ecommerce.category.CategoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -18,17 +20,27 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductRepository productRepo;
+    private final CategoryService categoryService;
 
-    //@Secured({"ROLE_ADMIN"})
+
     @GetMapping("/get-all-products")
     public ResponseEntity<?> getAllProducts(){
 
         List<Product> products = productService.getAllProducts();
+
         if ( products.isEmpty() ){
             return ResponseEntity.ok("NO PRODUCTS RETURNED");
         } else {
             return ResponseEntity.ok().body(products);
         }
+    }
+
+
+    @GetMapping("/get-categories")
+    public ResponseEntity<?> getCategories() {
+
+        List<Category> categories = categoryService.findAll();
+        return ResponseEntity.ok(categories);
     }
 
 
