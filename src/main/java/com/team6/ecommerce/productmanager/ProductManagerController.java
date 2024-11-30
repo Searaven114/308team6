@@ -48,16 +48,6 @@ public class ProductManagerController {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━KATEGORI KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
-    @GetMapping("/get-categories")
-    public ResponseEntity<?> getCategories() {
-
-        List<Category> categories = categoryService.findAll();
-        return ResponseEntity.ok(categories);
-    }
-
-
-
     //TODO bu direkt Category türünde almamalı sanırım, dto alacak sekilde bu ve servicedeki update metodu degismeli (sanıırm)
     @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
     @GetMapping("/update-category/{id}")
@@ -66,7 +56,6 @@ public class ProductManagerController {
         return ResponseEntity.ok().body( categoryService.update(id, category));
 
     }
-
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━PRODUCT KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
@@ -90,6 +79,8 @@ public class ProductManagerController {
 
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━COMMENT KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
+
+    //comment onaylama endpointi
 
 
 

@@ -1,11 +1,16 @@
-
 package com.team6.ecommerce.comment;
+
+import com.team6.ecommerce.constants.Strings;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import com.team6.ecommerce.comment.dto.CommentDTO;
 import com.team6.ecommerce.user.User;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -13,198 +18,101 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
+@Log4j2
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
 
+    //validasyon eksik
+
+
     private final CommentService commentService;
 
-//        private String productId;
-//        private String userId;
-//        private String content;
-//        private int rating;
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add-comment")
-    public Comment addComment(@RequestBody @Valid CommentDTO dto) {
+    public ResponseEntity<?> addComment(@RequestBody @Valid CommentDTO dto) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        commentService.addComment(user.getId(), dto);
+        log.info("[CommentController][addComment] Adding comment for productId: {}", dto.getProductId());
 
-        return null;
-    }
+        log.info("[CommentController][addComment] User ID: {} is adding a comment", user.getId());
+        String result = commentService.addComment(user.getId(), dto);
 
-    //rating conteni null olan bir comment objesi gibi muamele gorecek
-    @PostMapping("/add-rating")
-    public Comment addRating(@RequestBody @Valid CommentDTO dto) {
-
-
-        if (dto.getContent() != null && !dto.getContent().isEmpty()) {
-            throw new IllegalArgumentException("Rating should not include comment content.");
+        if (result.equals(Strings.COMMENT_ADDED_SUCCESS)){
+            return ResponseEntity.ok().body(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
         }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-
-        commentService.addRating(user.getId(), dto);
-
-        return null;
     }
 
+
+    //Asıl kullanılacak bu endpoint, paginated değil komple liste döndürüyor.
     @GetMapping("/{productId}")
     public List<Comment> getApprovedComments(@PathVariable String productId) {
-        return commentService.getApprovedComments(productId);
+
+        // Validating productId
+        if (productId == null || productId.isEmpty()) {
+            log.error("[CommentController][getApprovedComments] Invalid productId provided: {}", productId);
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+
+        log.info("[CommentController][getApprovedComments] Fetching approved comments for productId: {}", productId);
+        List<Comment> comments = commentService.getApprovedComments(productId);
+        log.info("[CommentController][getApprovedComments] Retrieved {} approved comments for productId: {}", comments.size(), productId);
+        return comments;
     }
 
 
-    @GetMapping("/{productId}-all")
+
+    @PreAuthorize("isAuthenticated()")
+    @Secured({"ROLE_PRODUCTMANAGER", "ROLE_ADMIN"})
+    @GetMapping("/all-comments/{productId}")
     public List<Comment> getAllComments(@PathVariable String productId) {
+        log.info("[CommentController][getAllComments] Fetching all comments for productId: {}", productId);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
-        Set<String> user_roles = user.getRoles();
 
-        if (user_roles.contains("ROLE_PRODUCTMANAGER")) {
-            return commentService.getAllCommentsForProduct(productId);
+        log.info("[CommentController][getAllComments] User ID: {} with roles {} is fetching all comments", user.getId(), user.getRoles());
+        List<Comment> comments = commentService.getAllCommentsForProduct(productId);
 
-        }
-        else {
-            throw new AccessDeniedException("Only product managers can view comments that are not approved yet.");
-        }
+        log.info("[CommentController][getAllComments] Retrieved {} comments for productId: {}", comments.size(), productId);
+        return comments;
     }
 
 
-    @PostMapping("/approve-comment")
-    public Comment approveComment(@RequestBody @Valid CommentDTO dto) {
 
-
+    @Secured({"ROLE_PRODUCTMANAGER", "ROLE_ADMIN"})
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/approve-comment/{commentId}")
+    public ResponseEntity<?> approveComment(@RequestParam String commentId) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
-        Set<String> user_roles = user.getRoles();
 
-        if (user_roles.contains("ROLE_PRODUCTMANAGER")) {
-            commentService.approveComment(dto.getCommentId());
-            return null;
-        }
+        commentService.approveComment(commentId);
 
-        else {
-            throw new AccessDeniedException("Only product managers can approve comments.");
-        }
+        log.info("[CommentController][approveComment] Comment ID: {} approved by User ID: {}", commentId, user.getId());
 
-
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{productId}/get-avg-rating")
     public double getAvgRating(@PathVariable String productId) {
-
-        return commentService.calculateAverageRating(productId);
+        //log.info("[CommentController][getAvgRating] Calculating average rating for productId: {}", productId);
+        double avgRating = commentService.calculateAverageRating(productId);
+        //log.info("[CommentController][getAvgRating] Average rating for productId: {} is {}", productId, avgRating);
+        return avgRating;
     }
 
     @GetMapping("/products/avg-ratings")
     public Map<String, Double> getAvgRatings(@RequestParam List<String> productIds) {
-        return commentService.calculateAverageRatings(productIds);
+        log.info("[CommentController][getAvgRatings] Calculating average ratings for productIds: {}", productIds);
+        Map<String, Double> avgRatings = commentService.calculateAverageRatings(productIds);
+        log.info("[CommentController][getAvgRatings] Calculated average ratings for {} products", avgRatings.size());
+        return avgRatings;
     }
-
 }
-
-
-
-
-
-
-
-
-//@AllArgsConstructor
-//@RestController
-//@RequestMapping("/api/comments")
-//public class CommentController {
-//
-//    private final CommentService commentService;
-//
-////        private String productId;
-////        private String userId;
-////        private String content;
-////        private int rating;
-//
-//    @PostMapping("/")
-//    public Comment addComment(@RequestBody @Valid CommentDTO dto) {
-//
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = (User) auth.getPrincipal();
-//
-//        commentService.addComment(user.getId(), dto);
-//
-//        return null;
-//    }
-//
-//    //rating conteni null olan bir comment objesi gibi muamele gorecek
-//    @PostMapping("/add-rating")
-//    public Comment addRating(@RequestBody @Valid CommentDTO dto) {
-//
-//
-//        if (dto.getContent() != null && !dto.getContent().isEmpty()) {
-//            throw new IllegalArgumentException("Rating should not include comment content.");
-//        }
-//
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = (User) auth.getPrincipal();
-//
-//        commentService.addRating(user.getId(), dto);
-//
-//        return null;
-//    }
-//
-//    @GetMapping("/{productId}")
-//    public List<Comment> getApprovedComments(@PathVariable String productId) {
-//        return commentService.getApprovedComments(productId);
-//    }
-//
-//
-//    @GetMapping("/{productId}-all")
-//    public List<Comment> getAllComments(@PathVariable String productId) {
-//
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = (User) auth.getPrincipal();
-//        Set<String> user_roles = user.getRoles();
-//
-//        if (user_roles.contains("admin")) {
-//            return commentService.getAllCommentsForProduct(productId);
-//
-//        }
-//        else {
-//            throw new AccessDeniedException("Only admins can view comments.");
-//        }
-//    }
-//
-//
-//    @PostMapping("/approve-comment")
-//    public Comment approveComment(@RequestBody @Valid CommentDTO dto) {
-//
-//
-//
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = (User) auth.getPrincipal();
-//        Set<String> user_roles = user.getRoles();
-//
-//        if (user_roles.contains("admin")) {
-//            commentService.approveComment(dto.getCommentId());
-//            return null;
-//        }
-//        else {
-//            throw new AccessDeniedException("Only admins can approve comments.");
-//        }
-//
-//
-//    }
-//
-//    @GetMapping("/{productId}/-get-avg-rating")
-//    public double getAvgRating(@PathVariable String productId) {
-//
-//        return commentService.calculateAverageRating(productId);
-//    }
-//
-//}

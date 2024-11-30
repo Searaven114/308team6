@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Log4j2
 @AllArgsConstructor
-@Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
 @Service
 public class CategoryService {
 

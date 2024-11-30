@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 @Getter
 @Setter
 @Document(collection = "products")
@@ -46,7 +47,6 @@ public class Product {
 
     private boolean warrantyStatus;
     private String distributorId;
-    // List<String> commentIds ?
 
     // Popularity metric, updated based on purchases, buna algoritma bulmak lazım hesaplanması için.
     private double popularityPoint;

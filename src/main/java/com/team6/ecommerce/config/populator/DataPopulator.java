@@ -56,11 +56,11 @@ public class DataPopulator {
 
         List<User> users = Arrays.asList(
                 new User("fuat", encoder.encode("avni"), "fuat", "05665127700"),
-                new User("admin", encoder.encode("adminpw"), "admin@example.com", fake.phoneNumber().phoneNumber()),
+                new User("admin", encoder.encode("adminpw"), "admin", fake.phoneNumber().phoneNumber()),
                 new User("salesmanager", encoder.encode("salespw"), "sales@example.com", fake.phoneNumber().phoneNumber()),
                 new User("productmanager", encoder.encode("productpw"), "product@example.com", fake.phoneNumber().phoneNumber()),
                 new User("customer1", encoder.encode("customerpw"), "customer1@example.com", fake.phoneNumber().phoneNumber()),
-                new User("customer2", encoder.encode("customerpw"), "ranaerkan@sabanciuniv.edu", fake.phoneNumber().phoneNumber()),
+                new User("customer2", encoder.encode("customerpw"), "customer2@example.com", fake.phoneNumber().phoneNumber()),
                 new User("customer3", encoder.encode("customerpw"), "d4rk1253@gmail.com", fake.phoneNumber().phoneNumber())
         );
 
@@ -138,15 +138,15 @@ public class DataPopulator {
         Map<String, List<String>> userProductMap = Map.of(
                 "customer1@example.com", List.of("1", "2"),
                 "customer2@example.com", List.of("3", "4"),
-                "customer3@example.com", List.of("5"),
-                "fuat", List.of("2", "3", "4")
+                "d4rk1253@gmail.com", List.of("5"),
+                "bora.urasoglu2000@hotmail.com", List.of("2", "3", "4")
         );
 
         Map<String, List<Integer>> userQuantityMap = Map.of(
                 "customer1@example.com", List.of(2, 1),
                 "customer2@example.com", List.of(7, 99),
-                "customer3@example.com", List.of(1),
-                "fuat", List.of(3, 2, 5)
+                "d4rk1253@gmail.com", List.of(1),
+                "bora.urasoglu2000@hotmail.com", List.of(3, 2, 5)
         );
 
         List<String> productIds = userProductMap.getOrDefault(username, Collections.emptyList());

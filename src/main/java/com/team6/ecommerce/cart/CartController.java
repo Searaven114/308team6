@@ -5,6 +5,7 @@ import com.team6.ecommerce.invoice.Invoice;
 import com.team6.ecommerce.invoice.InvoiceService;
 import com.team6.ecommerce.notification.NotificationService;
 import com.team6.ecommerce.payment.dto.PaymentRequest;
+import com.team6.ecommerce.payment.dto.PaymentRequestDTO;
 import com.team6.ecommerce.user.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -218,7 +219,7 @@ public class CartController {
 
 
     @PostMapping("/checkout")
-    public ResponseEntity<?> checkout(/*@RequestBody PaymentRequest paymentRequest*/) {
+    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated()) {
@@ -233,11 +234,12 @@ public class CartController {
 
         User user = (User) auth.getPrincipal();
 
-        String result = cartService.checkout(user.getId()/*,paymentRequest*/);
+        String result = cartService.checkout(user.getId(),dto);
 
         if (Strings.CART_IS_EMPTY.equals(result)) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("result");
         }
+
 
         // Check if result contains the "Invoice" keyword
         if (result.startsWith("Invoice")) {
@@ -257,7 +259,7 @@ public class CartController {
             }
         }
 
-        //this is the case in which the returned string doesnt match with any if cases which indicates an error.
+        //this is the case in which the returned string doesn't match with any if cases which indicates an error.
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Strings.CART_ERROR);
     }
 

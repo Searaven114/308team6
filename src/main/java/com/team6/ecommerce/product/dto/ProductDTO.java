@@ -2,9 +2,11 @@ package com.team6.ecommerce.product.dto;
 
 import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Min;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ProductDTO {
 
     @Nonnull

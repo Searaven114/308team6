@@ -15,4 +15,8 @@ public class Strings {
     public static final String CART_UPDATED_SUCCESSFULLY = "Cart updated successfully.";
     public static final String USER_NOT_FOUND = "User not found.";
     public static final Object CART_ERROR = "Unexpected error occurred during checkout";
+    public static final String PAYMENT_FAILED_INVALID_CARD_DETAILS = "Payment failed: Invalid card details";
+    public static final String PAYMENT_SUCCESSFUL = "Payment successful";
+    public static final String PAYMENT_FAILED_INSUFFICIENT_FUNDS = "Payment failed: Insufficient funds";
+    public static final String COMMENT_ADDED_SUCCESS = "Comment added successfully, it will be shown once approved by an admin.";
 }
