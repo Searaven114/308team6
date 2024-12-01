@@ -1,10 +1,7 @@
 package com.team6.ecommerce.invoice;
 
-import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -83,24 +80,31 @@ public class InvoiceService {
 
 
     public byte[] generateInvoicePDF(Invoice invoice) {
+        Document document = new Document();
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            PdfWriter writer = new PdfWriter(baos);
-            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+            PdfWriter.getInstance(document, baos);
+            document.open();
 
-            document.add(new Paragraph("Invoice")
-                    .setFont(com.itextpdf.kernel.font.PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
-                    .setFontSize(18)
-                    .setTextAlignment(TextAlignment.CENTER));
+            // Add title
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+            Paragraph title = new Paragraph("Invoice", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
 
-            document.add(new Paragraph("Invoice ID: " + invoice.getId()));
-            document.add(new Paragraph("Order ID: " + invoice.getOrderId()));
-            document.add(new Paragraph("User Email: " + invoice.getEmail()));
-            document.add(new Paragraph("Total Amount: $" + invoice.getTotalAmount()));
-            document.add(new Paragraph("Invoice Date: " + invoice.getInvoiceDate()));
+            document.add(Chunk.NEWLINE); // Add a blank line
+
+            // Add invoice details
+            Font detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+            document.add(new Paragraph("Invoice ID: " + invoice.getId(), detailsFont));
+            document.add(new Paragraph("Order ID: " + invoice.getOrderId(), detailsFont));
+            document.add(new Paragraph("User Email: " + invoice.getEmail(), detailsFont));
+            document.add(new Paragraph("Total Amount: $" + invoice.getTotalAmount(), detailsFont));
+            document.add(new Paragraph("Invoice Date: " + invoice.getInvoiceDate(), detailsFont));
 
             document.close();
             return baos.toByteArray();
         } catch (Exception e) {
+            log.error("[InvoiceService][generateInvoicePDF] Error generating PDF: {}", e.getMessage());
             throw new RuntimeException("Failed to generate PDF", e);
         }
     }

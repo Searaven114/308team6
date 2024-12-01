@@ -1,14 +1,12 @@
 package com.team6.ecommerce.config.populator;
 
 import com.github.javafaker.Faker;
-import com.itextpdf.commons.utils.DateTimeUtil;
-import com.team6.ecommerce.category.Category;
+
 import com.team6.ecommerce.comment.Comment;
 import com.team6.ecommerce.user.User;
 import com.team6.ecommerce.user.UserRepository;
 import com.team6.ecommerce.comment.CommentService;
 import com.team6.ecommerce.comment.CommentRepository;
-import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
