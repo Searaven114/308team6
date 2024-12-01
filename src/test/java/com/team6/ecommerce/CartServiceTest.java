@@ -1,5 +1,3 @@
-package com.team6.ecommerce;
-
 import com.team6.ecommerce.cart.Cart;
 import com.team6.ecommerce.cart.CartRepository;
 import com.team6.ecommerce.cart.CartService;
