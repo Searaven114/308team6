@@ -3,6 +3,7 @@ package com.team6.ecommerce.user;
 
 
 import com.team6.ecommerce.address.Address;
+import com.team6.ecommerce.address.AddressDTO;
 import com.team6.ecommerce.user.dto.ProfileDTO;
 import com.team6.ecommerce.user.dto.UserRegistrationDTO;
 import com.team6.ecommerce.user.dto.UserResponseDTO;
@@ -31,27 +32,6 @@ public class UserService{
 
     private final UserRepository userRepo;
     private final BCryptPasswordEncoder encoder;
-    //private final AuthenticationManager authenticationManager;
-
-
-//TODO: Add proper validation utilizing UserRegistrationException (derive more exceptions from this base exception class like invalidpasswordexcetion etc)
-
-
-//    public String login(UserLoginDTO loginDTO) throws Exception {
-//        // Authenticate the user credentials with Spring Security
-//        try {
-//            Authentication authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword())
-//            );
-//
-//            // Set the authentication in the SecurityContext to mark the user as logged in
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//            return "Login successful!";
-//        } catch (Exception e) {
-//            throw new Exception("Invalid username or password");
-//        }
-//    }
 
     @Secured({"ROLE_ADMIN"})
     public List<User> getUsers(){
@@ -59,7 +39,7 @@ public class UserService{
     }
 
 
-    public UserResponseDTO registerUser(UserRegistrationDTO dto) throws UserRegistrationException {
+    public String registerUser(UserRegistrationDTO dto) throws UserRegistrationException {
 
         User check = userRepo.findByEmail( dto.getEmail() );
 
@@ -108,7 +88,8 @@ public class UserService{
 
         log.info("[UserService] User has been saved: " + newUser.toString());
 
-        return new UserResponseDTO("Success", "User created",null);
+        //return new UserResponseDTO("Success", "User created",null);
+        return "User created successfully";
     }
 
 
@@ -133,7 +114,7 @@ public class UserService{
                 .build();
     }
 
-    
+
 
     @Secured({"ROLE_ADMIN"})
     public void deleteProfileAdmin(String id) {
@@ -157,33 +138,31 @@ public class UserService{
     }
 
 
-    public void deleteProfile( String id ){
-        if (id != null){
-            //TODO Burada o userden kalan her şeyin bağlantılı olarak silinmesi gerekiyor yetim kalmaması için,
-            //TODO mesela adresleri, Cartı, mail gönderilecekler listesi,
-            //TODO şimdi fark ettim ki, silmek yerine UserDetails interfacesinden inherit ettiğimiz "isActive" değişkeni var, bunu 1 -> 0 yapmamız lazım
-            //TODO "silinmiş" kabul etmek için, gerçekte de öyle, komple DB den silmek yasal degil, 3 ay muhafaza edilmesi gerekiyor by default, veri istem talebi gelirse
-            //TODO daha uzun süre muhafaza edilebiliyor. biz sadece Boolean isActive = false; yaparız kullanıcıdan silme isteği gelirse.
-        }
+//    public void deleteProfile( String id ){
+//        if (id != null){
+//            //TODO Burada o userden kalan her şeyin bağlantılı olarak silinmesi gerekiyor yetim kalmaması için,
+//            //TODO mesela adresleri, Cartı, mail gönderilecekler listesi,
+//            //TODO şimdi fark ettim ki, silmek yerine UserDetails interfacesinden inherit ettiğimiz "isActive" değişkeni var, bunu 1 -> 0 yapmamız lazım
+//            //TODO "silinmiş" kabul etmek için, gerçekte de öyle, komple DB den silmek yasal degil, 3 ay muhafaza edilmesi gerekiyor by default, veri istem talebi gelirse
+//            //TODO daha uzun süre muhafaza edilebiliyor. biz sadece Boolean isActive = false; yaparız kullanıcıdan silme isteği gelirse.
+//        }
+//
+//        throw new UserNotFoundException("User not found");
+//    }
 
-        throw new UserNotFoundException("User not found");
-    }
 
-
-    public ResponseEntity<?> addAddress(String id, com.team6.ecommerce.address.@Valid AddressDTO dto) {
-
+    public ResponseEntity<?> addAddress(String id, AddressDTO dto) {
         User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("[UserService] User not found"));
 
         Address address = new Address();
-
         address.setStreet(dto.getStreet());
         address.setCity(dto.getCity());
         address.setZipCode(dto.getZipCode());
         address.setCountry(dto.getCountry());
 
         user.getAddresses().add(address);
-
         userRepo.save(user);
+
         return ResponseEntity.ok("Address added successfully");
     }
 

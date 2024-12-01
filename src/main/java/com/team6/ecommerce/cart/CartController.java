@@ -1,4 +1,5 @@
 package com.team6.ecommerce.cart;
+import com.team6.ecommerce.cart.dto.CheckoutResponseDTO;
 import com.team6.ecommerce.cartitem.CartItem;
 import com.team6.ecommerce.constants.Strings;
 import com.team6.ecommerce.invoice.Invoice;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -218,8 +220,78 @@ public class CartController {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
+//    @PostMapping("/checkout")
+//    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO dto) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (auth == null || !auth.isAuthenticated()) {
+//            log.warn("[CartController][Checkout] Unauthorized access attempt.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+//        }
+//
+//        if (!(auth.getPrincipal() instanceof User)) {
+//            log.warn("[CartController][Checkout] Invalid principal type.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
+//        }
+//
+//        User user = (User) auth.getPrincipal();
+//
+//        String result = cartService.checkout(user.getId(),dto);
+//
+//        if (Strings.CART_IS_EMPTY.equals(result)) {
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("result");
+//        }
+//
+//
+//        // Check if result contains the "Invoice" keyword
+//        if (result.startsWith("Invoice")) {
+//
+//            //CheckoutResponseDTO CheckoutResponse = new CheckoutResponseDTO();
+//
+//            String invoiceId = result.split(" ")[1]; // Extract invoice ID
+//
+//            Optional<Invoice> invoiceOpt = invoiceService.getInvoiceById(invoiceId); // Assume a service method to fetch invoice
+//
+//            if (invoiceOpt.isPresent()) {
+//                Invoice invoice = invoiceOpt.get();
+//                invoice.setId(user.getEmail());
+//                notificationService.notifyUserWithInvoice(invoice);
+//                return ResponseEntity.ok(invoiceOpt.get());
+//            } else {
+//                log.error("[CartController][Checkout] Invoice ID {} not found", invoiceId);
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving invoice");
+//            }
+//        }
+//
+//        //this is the case in which the returned string doesn't match with any if cases which indicates an error.
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Strings.CART_ERROR);
+//    }
+
+
+
+
+//    @PostMapping("/merge")
+//    public ResponseEntity<?> mergeOfflineCart(@RequestBody List<CartItem> offlineCart) {
+//        // Get authenticated user from SecurityContext
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        if (auth == null || !auth.isAuthenticated()) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+//        }
+//
+//        User user = (User) auth.getPrincipal();
+//
+//        // Fetch the user's logged-in cart
+//        Cart userCart = cartService.fetchUserCart(user.getId());
+//
+//        // Merge offline cart into the logged-in cart
+//        cartService.mergeCarts(userCart, offlineCart);
+//
+//        return ResponseEntity.ok("Offline cart successfully merged with the logged-in cart");
+//    }
+
+
     @PostMapping("/checkout")
-    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO dto) {
+    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO paymentRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated()) {
@@ -234,36 +306,16 @@ public class CartController {
 
         User user = (User) auth.getPrincipal();
 
-        String result = cartService.checkout(user.getId(),dto);
+        CheckoutResponseDTO response = cartService.checkout(user.getId(), paymentRequest);
 
-        if (Strings.CART_IS_EMPTY.equals(result)) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("result");
+        if (response == null) {
+            log.warn("[CartController][Checkout] Checkout failed. Cart might be empty for user ID: {}", user.getId());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Strings.CART_IS_EMPTY);
         }
 
-
-        // Check if result contains the "Invoice" keyword
-        if (result.startsWith("Invoice")) {
-
-            String invoiceId = result.split(" ")[1]; // Extract invoice ID
-
-            Optional<Invoice> invoiceOpt = invoiceService.getInvoiceById(invoiceId); // Assume a service method to fetch invoice
-
-            if (invoiceOpt.isPresent()) {
-                Invoice invoice = invoiceOpt.get();
-                invoice.setId(user.getEmail());
-                notificationService.notifyUserWithInvoice(invoice);
-                return ResponseEntity.ok(invoiceOpt.get());
-            } else {
-                log.error("[CartController][Checkout] Invoice ID {} not found", invoiceId);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving invoice");
-            }
-        }
-
-        //this is the case in which the returned string doesn't match with any if cases which indicates an error.
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Strings.CART_ERROR);
+        log.info("[CartController][Checkout] Checkout successful for user ID: {}", user.getId());
+        return ResponseEntity.ok(response);
     }
-
-
 
 
 

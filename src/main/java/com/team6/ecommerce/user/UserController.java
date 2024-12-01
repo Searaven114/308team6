@@ -30,17 +30,24 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication != null) {
+            log.info("User {} is trying to register", authentication.getName());
+        }
+
         if (authentication != null && authentication.isAuthenticated()) {
             log.warn("[UserController][registerUser] Attempt to register while already logged in by user: {}", authentication.getName());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logged-in users cannot register.");
         }
 
         try {
-            UserResponseDTO response = userService.registerUser(dto);
-            return ResponseEntity.ok().body(response);
+            String response = userService.registerUser(dto);
+            if (response.equals("User created successfully")) {
+                return ResponseEntity.ok().body(response);
+            };
         } catch (UserRegistrationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
     }
 
 //    @PostMapping(value = "/user/update", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -83,56 +90,47 @@ public class UserController {
 //    }
 
 
-    @DeleteMapping("/user/delete")
-    public ResponseEntity<?> deleteOwnProfile() {
+//    @DeleteMapping("/user/delete")
+//    public ResponseEntity<?> deleteOwnProfile() {
+//
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String mail = authentication.getName();
+//
+//        User user = userRepo.findByEmail(mail);
+//
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
+//
+//        userService.deleteProfile(user.getId());
+//        return ResponseEntity.ok("Your profile has been deleted successfully");
+//    }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String mail = authentication.getName();
 
-        User user = userRepo.findByEmail(mail);
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-
-        userService.deleteProfile(user.getId());
-        return ResponseEntity.ok("Your profile has been deleted successfully");
-    }
-
-
-    @PostMapping("/user/address")
-    public ResponseEntity<?> addAddressToUser(@RequestBody @Valid AddressDTO dto) {
-
-        // Retrieve the authenticated user from the security context
+    @PostMapping("/account/address")
+    public ResponseEntity<?> addAddressToAccount(@RequestBody @Valid AddressDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // Check if the authentication object is null or not authenticated
         if (auth == null || !auth.isAuthenticated()) {
-            log.warn("Unauthorized access attempt: No authentication found or user not authenticated");
+            log.warn("Unauthorized access: No authentication.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
         }
 
-        // Ensure that the principal is of type User
         if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("Unauthorized access attempt: Invalid principal type for user: {}", auth.getPrincipal());
+            log.warn("Invalid principal type: {}", auth.getPrincipal());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
         }
 
-        // Cast the principal to the User class
         User user = (User) auth.getPrincipal();
 
-        // Double-check if the user object is null
         if (user == null) {
             log.error("Unexpected error: Authenticated principal is null");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authenticated user not found");
         }
 
-        // Proceed with the service logic and add the address
         log.info("User {} is adding a new address", user.getEmail());
         return userService.addAddress(user.getId(), dto);
     }
-    // TODO "If you want more control over validation, you can create a custom @ExceptionHandler method for MethodArgumentNotValidException to catch validation errors globally."
-
 
 
 

@@ -25,22 +25,53 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
+//    @Bean
+//    protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+//        return http
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS with configuration
+//                .authorizeHttpRequests(req -> req
+//                        .requestMatchers(publicEndpoints()).permitAll() // Group public endpoints
+//                        .requestMatchers(anonymousEndpoints()).anonymous() // Group anonymous-only endpoints
+//                        .requestMatchers(adminEndpoints()).hasRole("ADMIN") // Admin-only endpoints
+//                        .requestMatchers(productManagerEndpoints()).hasAnyRole("ADMIN", "PRODUCTMANAGER") // Product manager endpoints
+//                        .requestMatchers(salesManagerEndpoints()).hasAnyRole("ADMIN", "SALESMANAGER") // Sales manager endpoints
+//                        .anyRequest().authenticated()
+//                )
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .formLogin(form -> form
+//                        .loginProcessingUrl("/login") // Customize login endpoint
+//                        .successHandler((request, response, authentication) -> {
+//                            response.setStatus(HttpServletResponse.SC_OK);
+//                            response.setContentType("application/json");
+//                            response.getWriter().write("{\"status\":\"success\",\"message\":\"Login successful!\"}");
+//                        })
+//                        .failureHandler((request, response, exception) -> {
+//                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                            response.setContentType("application/json");
+//                            response.getWriter().write("{\"status\":\"failure\",\"message\":\"Invalid username or password.\"}");
+//                        })
+//                )
+//                .httpBasic(withDefaults())
+//                .build();
+//    }
+
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS with configuration
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(publicEndpoints()).permitAll() // Group public endpoints
-                        .requestMatchers(anonymousEndpoints()).anonymous() // Group anonymous-only endpoints
-                        .requestMatchers(adminEndpoints()).hasRole("ADMIN") // Admin-only endpoints
-                        .requestMatchers(productManagerEndpoints()).hasAnyRole("ADMIN", "PRODUCTMANAGER") // Product manager endpoints
-                        .requestMatchers(salesManagerEndpoints()).hasAnyRole("ADMIN", "SALESMANAGER") // Sales manager endpoints
+                        .requestMatchers(publicEndpoints()).permitAll()
+                        .requestMatchers(anonymousEndpoints()).permitAll() // Explicitly permit
+                        .requestMatchers(adminEndpoints()).hasRole("ADMIN")
+                        .requestMatchers(productManagerEndpoints()).hasAnyRole("ADMIN", "PRODUCTMANAGER")
+                        .requestMatchers(salesManagerEndpoints()).hasAnyRole("ADMIN", "SALESMANAGER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form
-                        .loginProcessingUrl("/login") // Customize login endpoint
+                        .loginProcessingUrl("/login")
                         .successHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.setContentType("application/json");

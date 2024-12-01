@@ -1,10 +1,13 @@
 package com.team6.ecommerce.cart;
 
+import com.team6.ecommerce.cart.dto.CheckoutResponseDTO;
 import com.team6.ecommerce.cartitem.CartItem;
 import com.team6.ecommerce.constants.Strings;
 import com.team6.ecommerce.exception.UserNotFoundException;
 import com.team6.ecommerce.invoice.Invoice;
 import com.team6.ecommerce.invoice.InvoiceRepository;
+import com.team6.ecommerce.invoice.InvoiceService;
+import com.team6.ecommerce.notification.NotificationService;
 import com.team6.ecommerce.order.Order;
 import com.team6.ecommerce.order.OrderRepository;
 import com.team6.ecommerce.order.OrderStatus;
@@ -37,6 +40,8 @@ public class CartService {
     private final OrderRepository orderRepo;
     private final InvoiceRepository invoiceRepo;
     private final PaymentService paymentService;
+    private final NotificationService notificationService;
+    private final InvoiceService invoiceService;
 
     private void recalculateTotalPrice(Cart cart) {
         double totalPrice = cart.getCartItems().stream()
@@ -111,10 +116,9 @@ public class CartService {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
     public String addItemToUserCart(String userId, String productId, int quantity) {
 
-        //Validate the presence of user
+        // Validate the presence of user
         if (userId.isEmpty()) {
             log.error("[CartService][addItemToUserCart] Invalid userId provided: {}", userId);
             throw new UserNotFoundException("User ID cannot be null or empty");
@@ -129,9 +133,14 @@ public class CartService {
 
         Product product = productOpt.get();
 
-        // Stock checking
+        // Stock checking for non-positive stock
         if (product.getQuantityInStock() <= 0) {
             return Strings.PRODUCT_OUT_OF_STOCK;
+        }
+
+        // Additional check for requested quantity being available
+        if (quantity > product.getQuantityInStock()) {
+            return String.format(Strings.PRODUCT_NOT_AVAILABLE_IN_REQUESTED_QUANTITY, product.getQuantityInStock());
         }
 
         Optional<Cart> cartOpt = cartRepo.findByUserId(userId);
@@ -274,42 +283,19 @@ public class CartService {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-    public String checkout(String userId, PaymentRequestDTO dto) {
+    public CheckoutResponseDTO checkout(String userId, PaymentRequestDTO paymentRequest) {
+        log.info("[CartService][Checkout] Starting checkout for user ID: {}", userId);
 
-        // Validate the presence of user
-        if (userId == null || userId.isEmpty()) {
-            log.error("[CartService][Checkout] Invalid userId provided: {}", userId);
-            throw new UserNotFoundException("User ID cannot be null or empty");
-        }
-
-        // Fetch the cart for the user
+        // Fetch user's cart
         Optional<Cart> cartOpt = cartRepo.findByUserId(userId);
-
         if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
-            log.info("[CartService][Checkout] Cart not found or empty for userId: {}", userId);
-            return Strings.CART_IS_EMPTY;
+            log.warn("[CartService][Checkout] Cart is empty for user ID: {}", userId);
+            return null; // Handle properly in controller
         }
 
         Cart cart = cartOpt.get();
 
-        // Step 1: Simulate Payment
-        log.info("[CartService][Checkout] Simulating payment for userId: {}", userId);
-        PaymentRequest paymentRequest = PaymentRequest.builder()
-                .totalAmount(cart.getTotalPrice().longValue())
-                .cardExpiry(dto.getCardExpiry())
-                .cvv(dto.getCvv())
-                .cardNumber(dto.getCardNumber())
-                .build();
-
-        PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
-
-        if (!paymentResponse.isSuccess()) {
-            log.error("[CartService][Checkout] Payment failed: {}", paymentResponse.getMessage());
-            return paymentResponse.getMessage();
-        }
-
         // Deduct product stock
-        // carta eklerken zaten stock checking yaptıgını varsayıyoruz fakat yinede runtimeexception throwluyor nolur nolmaz
         for (CartItem item : cart.getCartItems()) {
             Product product = productRepo.findById(item.getProduct().getId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProduct().getId()));
@@ -320,7 +306,6 @@ public class CartService {
             }
 
             product.setQuantityInStock(product.getQuantityInStock() - item.getQuantity());
-            product.setPopularityPoint(product.getPopularityPoint() + 1);
             productRepo.save(product);
         }
 
@@ -331,35 +316,49 @@ public class CartService {
                 .orderStatus(OrderStatus.PROCESSING)
                 .createdAt(new Date())
                 .total(cart.getTotalPrice().longValue())
+                .address(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getAddresses().get(0))
                 .build();
 
         orderRepo.save(order); // Save order to DB
 
         log.info("[CartService][Checkout] Order created with ID: {}", order.getId());
 
-        // Generate Invoice
-        User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-
+        // Create and save invoice
         Invoice invoice = Invoice.builder()
-                .orderId(order.getId())
                 .userId(userId)
+                .orderId(cart.getId())
                 .totalAmount(cart.getTotalPrice())
                 .invoiceDate(new Date())
-                .email(user.getEmail())
+                .email(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getEmail())
                 .build();
 
-        invoiceRepo.save(invoice); // Save invoice to DB
+        invoiceRepo.save(invoice);
 
-        log.info("[CartService][Checkout] Invoice generated with ID: {}", invoice.getId());
+        log.info("[CartService][Checkout] Invoice created for user ID: {} with invoice ID: {}", userId, invoice.getId());
 
-        // Clear Cart
+        // Send invoice notification
+        notificationService.notifyUserWithInvoice(invoice);
+
+        // Prepare CheckoutResponseDTO
+        List<CartItem> purchasedItems = new ArrayList<>(cart.getCartItems()); // Create a copy of cart items before clearing
+
+        // Prepare CheckoutResponseDTO
+        CheckoutResponseDTO response = CheckoutResponseDTO.builder()
+                .invoice(invoice)
+                .totalAmount(invoice.getTotalAmount())
+                .purchasedItems(purchasedItems)
+                .build();
+
+        // Clear the cart
         cart.getCartItems().clear();
         cart.setTotalPrice(0.0);
         cartRepo.save(cart);
 
-        log.info("[CartService][Checkout] Cart cleared for userId: {}", userId);
+        log.info("[CartService][Checkout] Cart cleared for user ID: {}", userId);
 
-        return String.format("Invoice %s", invoice.getId());
+
+        log.info("[CartService][Checkout] Checkout completed for user ID: {}", userId);
+        return response;
     }
 
 
@@ -416,6 +415,22 @@ public class CartService {
         }
         return message.isEmpty() ? null : message;
     }
+
+
+//    public void mergeCarts(Cart userCart, List<CartItem> offlineCart) {
+//        for (CartItem offlineItem : offlineCart) {
+//            Optional<CartItem> existingItem = userCart.getCartItems().stream()
+//                    .filter(item -> item.getProductId().equals(offlineItem.getProductId()))
+//                    .findFirst();
+//
+//            if (existingItem.isPresent()) {
+//                existingItem.get().setQuantity(existingItem.get().getQuantity() + offlineItem.getQuantity());
+//            } else {
+//                userCart.getCartItems().add(offlineItem);
+//            }
+//        }
+//        cartRepo.save(userCart);
+//    }
 
 
 

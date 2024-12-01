@@ -1,7 +1,5 @@
 package com.team6.ecommerce.config.populator;
 
-
-
 import com.github.javafaker.Faker;
 import com.team6.ecommerce.address.Address;
 import com.team6.ecommerce.cart.Cart;
@@ -139,14 +137,14 @@ public class DataPopulator {
                 "customer1@example.com", List.of("1", "2"),
                 "customer2@example.com", List.of("3", "4"),
                 "d4rk1253@gmail.com", List.of("5"),
-                "bora.urasoglu2000@hotmail.com", List.of("2", "3", "4")
+                "fuat", List.of("2", "3", "4")
         );
 
         Map<String, List<Integer>> userQuantityMap = Map.of(
                 "customer1@example.com", List.of(2, 1),
                 "customer2@example.com", List.of(7, 99),
                 "d4rk1253@gmail.com", List.of(1),
-                "bora.urasoglu2000@hotmail.com", List.of(3, 2, 5)
+                "fuat", List.of(3, 2, 5)
         );
 
         List<String> productIds = userProductMap.getOrDefault(username, Collections.emptyList());
