@@ -19,4 +19,5 @@ public class Strings {
     public static final String PAYMENT_SUCCESSFUL = "Payment successful";
     public static final String PAYMENT_FAILED_INSUFFICIENT_FUNDS = "Payment failed: Insufficient funds";
     public static final String COMMENT_ADDED_SUCCESS = "Comment added successfully, it will be shown once approved by an admin.";
+    public static final String CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED = "User has not purchased this product, and cannot comment on it.";
 }

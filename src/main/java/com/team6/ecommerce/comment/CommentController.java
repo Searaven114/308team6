@@ -39,10 +39,13 @@ public class CommentController {
         log.info("[CommentController][addComment] Adding comment for productId: {}", dto.getProductId());
 
         log.info("[CommentController][addComment] User ID: {} is adding a comment", user.getId());
+
         String result = commentService.addComment(user.getId(), dto);
 
         if (result.equals(Strings.COMMENT_ADDED_SUCCESS)){
             return ResponseEntity.ok().body(result);
+        } else if (result.equals(Strings.CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED)){
+            return ResponseEntity.status(403).body(result);
         } else {
             return ResponseEntity.badRequest().body(result);
         }
@@ -102,9 +105,10 @@ public class CommentController {
 
     @GetMapping("/{productId}/get-avg-rating")
     public double getAvgRating(@PathVariable String productId) {
-        //log.info("[CommentController][getAvgRating] Calculating average rating for productId: {}", productId);
         double avgRating = commentService.calculateAverageRating(productId);
-        //log.info("[CommentController][getAvgRating] Average rating for productId: {} is {}", productId, avgRating);
+
+        log.info("[CommentController][getAvgRating] Average rating for productId: {} is {}", productId, avgRating);
+
         return avgRating;
     }
 

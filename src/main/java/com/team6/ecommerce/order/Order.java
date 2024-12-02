@@ -13,6 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 @ToString
 @Document(collection = "orders")
 public class Order {

@@ -38,12 +38,12 @@ public class User implements UserDetails {
     private String phone;
     private String age;
     private String taxId;
-    private List<Address> addresses;
+    private List<Address> addresses = new ArrayList<>();
     private Set<String> roles;
     private String registerIp;
     private String registerDate;
     private String cartId;
-    private List<Order> orders = new ArrayList<>();
+    //private List<Order> orders = new ArrayList<>();
     private Boolean isActive = true;
     private List<String> wishlist = new ArrayList<>();
 

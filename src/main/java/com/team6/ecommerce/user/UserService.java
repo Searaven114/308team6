@@ -20,10 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 @AllArgsConstructor
@@ -71,7 +68,7 @@ public class UserService{
 
         newUser.setAge( dto.getAge() );
 
-        newUser.setAddresses( null );
+        newUser.setAddresses( new ArrayList<Address>() ); //todo
 
         Set<String> roles = new HashSet<>();
         roles.add("ROLE_CUSTOMER"); //ROLE_CUSTOMER, ROLE_ADMIN, ROLE_SALESMANAGER, ROLE_PRODUCTMANAGER

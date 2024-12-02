@@ -30,14 +30,14 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null) {
+        if (authentication != null ) {
             log.info("User {} is trying to register", authentication.getName());
         }
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            log.warn("[UserController][registerUser] Attempt to register while already logged in by user: {}", authentication.getName());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logged-in users cannot register.");
-        }
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            log.warn("[UserController][registerUser] Attempt to register while already logged in by user: {}", authentication.getName());
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logged-in users cannot register.");
+//        }
 
         try {
             String response = userService.registerUser(dto);
@@ -106,7 +106,7 @@ public class UserController {
 //        return ResponseEntity.ok("Your profile has been deleted successfully");
 //    }
 
-
+    //todo register -> add address -> checkout seneryosu
     @PostMapping("/account/address")
     public ResponseEntity<?> addAddressToAccount(@RequestBody @Valid AddressDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
