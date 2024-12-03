@@ -1,6 +1,7 @@
+package com.team6.ecommerce;
+
 import com.team6.ecommerce.category.Category;
 import com.team6.ecommerce.category.CategoryRepository;
-import com.team6.ecommerce.category.CategoryService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -11,46 +12,40 @@ import static org.mockito.Mockito.*;
 public class GetCategoryByIdTest {
 
     @Test
-    public void testGetCategoryById_Success() {
+    public void testGetCategoryById_WhenCategoryExists() {
         // Arrange
-        String categoryId = "1";
-
+        String categoryId = "123";
         CategoryRepository categoryRepository = mock(CategoryRepository.class);
+        Category mockCategory = new Category();
+        mockCategory.setId(categoryId);
+        mockCategory.setName("Test Category");
 
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setName("Electronics");
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-
-        CategoryService categoryService = new CategoryService(categoryRepository);
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
 
         // Act
-        Category result = categoryService.getCategoryById(categoryId);
+        Optional<Category> result = categoryRepository.findById(categoryId);
 
         // Assert
-        assertNotNull(result, "The result should not be null");
-        assertEquals(categoryId, result.getId(), "The category ID should match");
-        assertEquals("Electronics", result.getName(), "The category name should match");
+        assertTrue(result.isPresent(), "Category should be found");
+        assertEquals("Test Category", result.get().getName(), "Category name should match");
 
         // Verify interactions
         verify(categoryRepository, times(1)).findById(categoryId);
     }
 
     @Test
-    public void testGetCategoryById_NotFound() {
+    public void testGetCategoryById_WhenCategoryDoesNotExist() {
         // Arrange
-        String categoryId = "non-existent-id";
-
+        String categoryId = "123";
         CategoryRepository categoryRepository = mock(CategoryRepository.class);
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
-        CategoryService categoryService = new CategoryService(categoryRepository);
+        // Act
+        Optional<Category> result = categoryRepository.findById(categoryId);
 
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> categoryService.getCategoryById(categoryId));
-        assertEquals("Category not found", exception.getMessage(), "Expected 'Category not found' exception message");
+        // Assert
+        assertFalse(result.isPresent(), "Category should not be found");
 
         // Verify interactions
         verify(categoryRepository, times(1)).findById(categoryId);

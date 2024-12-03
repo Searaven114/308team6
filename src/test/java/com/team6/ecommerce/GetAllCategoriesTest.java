@@ -3,9 +3,8 @@ import com.team6.ecommerce.category.CategoryRepository;
 import com.team6.ecommerce.category.CategoryService;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -13,7 +12,7 @@ import static org.mockito.Mockito.*;
 public class GetAllCategoriesTest {
 
     @Test
-    public void testGetAllCategories() {
+    public void testFindAllCategories() {
         // Arrange
         CategoryRepository categoryRepository = mock(CategoryRepository.class);
 
@@ -25,20 +24,18 @@ public class GetAllCategoriesTest {
         category2.setId("2");
         category2.setName("Books");
 
-        List<Category> categories = Stream.of(category1, category2).collect(Collectors.toList());
-
-        when(categoryRepository.findAll()).thenReturn(categories);
+        when(categoryRepository.findAll()).thenReturn(Arrays.asList(category1, category2));
 
         CategoryService categoryService = new CategoryService(categoryRepository);
 
         // Act
-        List<Category> result = categoryService.getAllCategories();
+        List<Category> categories = categoryService.findAll();
 
         // Assert
-        assertNotNull(result, "The result should not be null");
-        assertEquals(2, result.size(), "The size of categories list should be 2");
-        assertEquals("Electronics", result.get(0).getName(), "The first category name should match");
-        assertEquals("Books", result.get(1).getName(), "The second category name should match");
+        assertNotNull(categories, "Categories list should not be null");
+        assertEquals(2, categories.size(), "Categories list size should match");
+        assertEquals("Electronics", categories.get(0).getName());
+        assertEquals("Books", categories.get(1).getName());
 
         // Verify interactions
         verify(categoryRepository, times(1)).findAll();

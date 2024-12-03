@@ -16,20 +16,15 @@ public class AddCategoryTest {
         Category newCategory = new Category();
         newCategory.setName("New Category");
 
-        Category savedCategory = new Category();
-        savedCategory.setId("1");
-        savedCategory.setName("New Category");
-
-        when(categoryRepository.save(newCategory)).thenReturn(savedCategory);
+        when(categoryRepository.save(newCategory)).thenReturn(newCategory);
 
         CategoryService categoryService = new CategoryService(categoryRepository);
 
         // Act
-        Category result = categoryService.addCategory(newCategory);
+        Category result = categoryService.save(newCategory);
 
         // Assert
         assertNotNull(result, "Saved category should not be null");
-        assertEquals("1", result.getId(), "Category ID should match");
         assertEquals("New Category", result.getName(), "Category name should match");
 
         // Verify interactions

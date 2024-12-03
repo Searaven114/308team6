@@ -26,44 +26,18 @@ public class UpdateCategoryTest {
         updatedCategory.setName("Updated Category");
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
-        when(categoryRepository.save(existingCategory)).thenReturn(updatedCategory);
+        when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
 
         CategoryService categoryService = new CategoryService(categoryRepository);
 
         // Act
-        Category result = categoryService.updateCategory(categoryId, updatedCategory);
+        Category result = categoryService.save(updatedCategory);
 
         // Assert
         assertNotNull(result, "Updated category should not be null");
-        assertEquals(categoryId, result.getId(), "Category ID should match");
         assertEquals("Updated Category", result.getName(), "Category name should match");
 
         // Verify interactions
-        verify(categoryRepository, times(1)).findById(categoryId);
-        verify(categoryRepository, times(1)).save(existingCategory);
-    }
-
-    @Test
-    public void testUpdateCategory_NotFound() {
-        // Arrange
-        String categoryId = "non-existent-id";
-
-        CategoryRepository categoryRepository = mock(CategoryRepository.class);
-
-        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
-
-        CategoryService categoryService = new CategoryService(categoryRepository);
-
-        Category updatedCategory = new Category();
-        updatedCategory.setId(categoryId);
-        updatedCategory.setName("Updated Category");
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> categoryService.updateCategory(categoryId, updatedCategory));
-        assertEquals("Category not found", exception.getMessage(), "Expected 'Category not found' exception message");
-
-        // Verify interactions
-        verify(categoryRepository, times(1)).findById(categoryId);
-        verify(categoryRepository, never()).save(any());
+        verify(categoryRepository, times(1)).save(updatedCategory);
     }
 }

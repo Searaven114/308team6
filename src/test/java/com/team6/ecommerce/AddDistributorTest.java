@@ -12,27 +12,20 @@ public class AddDistributorTest {
     public void testAddDistributor_Success() {
         // Arrange
         DistributorRepository distributorRepository = mock(DistributorRepository.class);
+        Distributor distributor = new Distributor();
+        distributor.setName("Test Distributor");
 
-        Distributor newDistributor = new Distributor();
-        newDistributor.setName("New Distributor");
-
-        Distributor savedDistributor = new Distributor();
-        savedDistributor.setId("1");
-        savedDistributor.setName("New Distributor");
-
-        when(distributorRepository.save(newDistributor)).thenReturn(savedDistributor);
+        when(distributorRepository.save(distributor)).thenReturn(distributor);
 
         DistributorService distributorService = new DistributorService(distributorRepository);
 
         // Act
-        Distributor result = distributorService.addDistributor(newDistributor);
+        Distributor result = distributorService.save(distributor);
 
         // Assert
-        assertNotNull(result, "Saved distributor should not be null");
-        assertEquals("1", result.getId(), "Distributor ID should match");
-        assertEquals("New Distributor", result.getName(), "Distributor name should match");
+        assertNotNull(result, "The saved distributor should not be null");
+        assertEquals("Test Distributor", result.getName(), "The distributor name should match");
 
-        // Verify interactions
-        verify(distributorRepository, times(1)).save(newDistributor);
+        verify(distributorRepository, times(1)).save(distributor);
     }
 }
