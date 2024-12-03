@@ -319,4 +319,40 @@ public class CartController {
 
 
 
+
+    //demo oncesinde silinen
+//    @PostMapping("/checkout")
+//    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO paymentRequest) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (auth == null || !auth.isAuthenticated()) {
+//            log.warn("[CartController][Checkout] Unauthorized access attempt.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+//        }
+//
+//        if (!(auth.getPrincipal() instanceof User)) {
+//            log.warn("[CartController][Checkout] Invalid principal type.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
+//        }
+//
+//        User user = (User) auth.getPrincipal();
+//
+//        if (user.getAddresses().isEmpty()){
+//            return ResponseEntity.badRequest().body(Strings.NO_ADDRESS_FOUND);
+//        }
+//
+//        Invoice invoice = cartService.checkout(user.getId(), paymentRequest);
+//
+//        if (invoice == null) {
+//            log.warn("[CartController][Checkout] Checkout failed. Cart might be empty for user ID: {}", user.getId());
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Strings.CART_IS_EMPTY);
+//        }
+//
+//        log.info("[CartController][Checkout] Checkout successful for user ID: {}", user.getId());
+//        return ResponseEntity.ok(invoice);
+//    }
+
+
+
+
 }

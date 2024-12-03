@@ -1,5 +1,7 @@
 package com.team6.ecommerce.constants;
 
+import org.springframework.http.ResponseEntity;
+
 public class Strings {
 
 
@@ -20,4 +22,6 @@ public class Strings {
     public static final String PAYMENT_FAILED_INSUFFICIENT_FUNDS = "Payment failed: Insufficient funds";
     public static final String COMMENT_ADDED_SUCCESS = "Comment added successfully, it will be shown once approved by an admin.";
     public static final String CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED = "User has not purchased this product, and cannot comment on it.";
+    public static final String NO_ADDRESS_FOUND = "Please add address to proceed with the checkout";
+    public static final String DUPLICATE_COMMENT_BLOCKED = "Duplicate comment found, rejecting.";
 }

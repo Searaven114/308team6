@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +25,7 @@ public class Invoice {
     private Double totalAmount;
     private Date invoiceDate;
     private String email;
+
+    // New field to track purchased items (productId -> quantity)
+    private Map<String, Integer> purchasedItems;
 }

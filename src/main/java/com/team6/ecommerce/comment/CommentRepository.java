@@ -10,6 +10,6 @@ public interface CommentRepository extends MongoRepository<Comment, String> {
 
     List<Comment> findByProductIdAndApprovedTrue(String productId);  // Fetch approved comments for a product
     List<Comment> findByProductId(String productId);  // Fetch all comments (for admin approval)
-
+    Boolean existsCommentByUserId(String userId);
 }
 

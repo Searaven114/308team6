@@ -53,18 +53,19 @@ public class ProductPopulator {
         List<Product> products = new ArrayList<>();
 
         monitorCat.ifPresent(category -> products.add(new Product(
-                    "1",
-                    "Dell UltraSharp Monitor",
-                    monitorCat.get().getId(),  // Retrieve the Category from Optional
-                    "Dell",
-                    "U2720Q",
-                    "D273928Q",
-                    "27-inch 4K monitor with vibrant colors and sharp details, ideal for productivity and media consumption.",
-                    35,
-                    1000.0,
-                    true,
-                    "1"
-            )));
+                "1",
+                "Dell UltraSharp Monitor",
+                monitorCat.get().getId(),  // Retrieve the Category from Optional
+                "Dell",
+                "U2720Q",
+                "D273928Q",
+                "27-inch 4K monitor with vibrant colors and sharp details, ideal for productivity and media consumption.",
+                35,
+                1000.0,
+                true,
+                "1",
+                20
+        )));
 
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -78,7 +79,8 @@ public class ProductPopulator {
                 0,
                 749.99,
                 true,
-                "2"
+                "2",
+                2
         )));
 
 
@@ -93,7 +95,8 @@ public class ProductPopulator {
                 25,
                 1099.99,
                 true,
-                "2"
+                "2",
+                7
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -107,7 +110,8 @@ public class ProductPopulator {
                 80,
                 20.0,
                 true,
-                "1"
+                "1",
+                10
         )));
 
         laptopCat.ifPresent(category -> {
@@ -122,7 +126,8 @@ public class ProductPopulator {
                     15,
                     2499.99,
                     true,
-                    "1"
+                    "1",
+                    70
             ));
         });
 
@@ -138,7 +143,8 @@ public class ProductPopulator {
                     30,
                     1499.99,
                     true,
-                    "2"
+                    "2",
+                    15
             ));
         });
 
@@ -154,7 +160,9 @@ public class ProductPopulator {
                     25,
                     699.99,
                     true,
-                    "2"
+                    "2",
+
+                    60
             ));
         });
 
@@ -170,7 +178,8 @@ public class ProductPopulator {
                     20,
                     1299.99,
                     true,
-                    "2"
+                    "2",
+                    15
             ));
         });
 
@@ -187,7 +196,8 @@ public class ProductPopulator {
                     50,
                     59.99,
                     true,
-                    "1"
+                    "1",
+                    12
             ));
         });
 
@@ -205,7 +215,8 @@ public class ProductPopulator {
                     45,
                     89.99,
                     true,
-                    "1"
+                    "1",
+                    17
             ));
         });
 
@@ -220,7 +231,8 @@ public class ProductPopulator {
                 40,
                 1400.0,
                 true,
-                "2"
+                "2",
+                19
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -234,7 +246,8 @@ public class ProductPopulator {
                 15,
                 1000.0,
                 true,
-                "1"
+                "1",
+                38
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -248,7 +261,8 @@ public class ProductPopulator {
                 60,
                 79.99,
                 true,
-                "2"
+                "2",
+                21
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -262,7 +276,8 @@ public class ProductPopulator {
                 20,
                 1599.99,
                 true,
-                "1"
+                "1",
+                31
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -276,7 +291,8 @@ public class ProductPopulator {
                 10,
                 849.99,
                 true,
-                "2"
+                "2",
+                51
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -290,7 +306,8 @@ public class ProductPopulator {
                 80,
                 49.99,
                 true,
-                "2"
+                "2",
+                12
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -304,7 +321,8 @@ public class ProductPopulator {
                 30,
                 999.99,
                 true,
-                "2"
+                "2",
+                57
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -318,7 +336,8 @@ public class ProductPopulator {
                 25,
                 699.99,
                 true,
-                "1"
+                "1",
+                19
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -332,7 +351,8 @@ public class ProductPopulator {
                 50,
                 49.99,
                 true,
-                "1"
+                "1",
+                87
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -346,7 +366,8 @@ public class ProductPopulator {
                 40,
                 799.99,
                 true,
-                "2"
+                "2",
+                43
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -360,7 +381,8 @@ public class ProductPopulator {
                 20,
                 1299.99,
                 true,
-                "1"
+                "1",
+                37
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -374,7 +396,8 @@ public class ProductPopulator {
                 10,
                 699.99,
                 true,
-                "2"
+                "2",
+                65
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -388,7 +411,8 @@ public class ProductPopulator {
                 40,
                 99.99,
                 true,
-                "1"
+                "1",
+                59
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -402,7 +426,8 @@ public class ProductPopulator {
                 30,
                 699.99,
                 true,
-                "2"
+                "2",
+                29
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -416,7 +441,8 @@ public class ProductPopulator {
                 25,
                 349.99,
                 true,
-                "1"
+                "1",
+                19
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -430,7 +456,8 @@ public class ProductPopulator {
                 45,
                 139.99,
                 true,
-                "2"
+                "2",
+                40
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -444,7 +471,8 @@ public class ProductPopulator {
                 35,
                 999.99,
                 true,
-                "1"
+                "1",
+                30
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -458,7 +486,8 @@ public class ProductPopulator {
                 15,
                 599.99,
                 true,
-                "2"
+                "2",
+                5
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -472,7 +501,8 @@ public class ProductPopulator {
                 50,
                 149.99,
                 true,
-                "1"
+                "1",
+                2
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -486,7 +516,8 @@ public class ProductPopulator {
                 25,
                 749.99,
                 true,
-                "2"
+                "2",
+                17
         )));
 
         productRepo.saveAll(products);

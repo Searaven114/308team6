@@ -361,6 +361,64 @@ public class CartService {
         return response;
     }
 
+    /*public Invoice checkout(String userId, PaymentRequestDTO paymentRequest) {
+
+        log.info("[CartService][Checkout] Starting checkout for user ID: {}", userId);
+
+        // Fetch user's cart
+        Optional<Cart> cartOpt = cartRepo.findByUserId(userId);
+
+        if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
+            log.warn("[CartService][Checkout] Cart is empty for user ID: {}", userId);
+            return null; // Handle properly in the controller
+        }
+
+        Cart cart = cartOpt.get();
+
+        // Deduct product stock and prepare purchased items map
+        Map<String, Integer> purchasedItems = new HashMap<>();
+        for (CartItem item : cart.getCartItems()) {
+            Product product = productRepo.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProduct().getId()));
+
+            if (product.getQuantityInStock() < item.getQuantity()) {
+                log.error("[CartService][Checkout] Not enough stock for product: {}", product.getTitle());
+                throw new RuntimeException("Not enough stock for product: " + product.getTitle());
+            }
+
+            product.setQuantityInStock(product.getQuantityInStock() - item.getQuantity());
+            productRepo.save(product);
+
+            purchasedItems.put(product.getId(), item.getQuantity());
+        }
+
+        // Create and save invoice
+        Invoice invoice = Invoice.builder()
+                .userId(userId)
+                .orderId(cart.getId())
+                .totalAmount(cart.getTotalPrice()) // Cart's total price
+                .invoiceDate(new Date())
+                .email(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getEmail())
+                .purchasedItems(purchasedItems) // Populate purchased items
+                .build();
+
+        invoiceRepo.save(invoice);
+
+        log.info("[CartService][Checkout] Invoice created for user ID: {} with invoice ID: {}", userId, invoice.getId());
+
+        // Send invoice notification
+        notificationService.notifyUserWithInvoice(invoice);
+
+        // Clear the cart
+        cart.getCartItems().clear();
+        cart.setTotalPrice(0.0);
+        cartRepo.save(cart);
+
+        log.info("[CartService][Checkout] Cart cleared for user ID: {}", userId);
+        return invoice;
+    }*/
+
+
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
@@ -416,65 +474,7 @@ public class CartService {
         return message.isEmpty() ? null : message;
     }
 
-
-//    public void mergeCarts(Cart userCart, List<CartItem> offlineCart) {
-//        for (CartItem offlineItem : offlineCart) {
-//            Optional<CartItem> existingItem = userCart.getCartItems().stream()
-//                    .filter(item -> item.getProductId().equals(offlineItem.getProductId()))
-//                    .findFirst();
-//
-//            if (existingItem.isPresent()) {
-//                existingItem.get().setQuantity(existingItem.get().getQuantity() + offlineItem.getQuantity());
-//            } else {
-//                userCart.getCartItems().add(offlineItem);
-//            }
-//        }
-//        cartRepo.save(userCart);
-//    }
-
-
-
 }
-
-
-
-
-// Merge the session cart with the user's cart
-//    private void mergeCarts(Cart sessionCart, Cart userCart) {
-//
-//        for (CartItem sessionCartItem : sessionCart.getCartItems()) {
-//            boolean productExists = false;
-//
-//            // Check if the session cart item already exists in the user's cart
-//            for (CartItem userCartItem : userCart.getCartItems()) {
-//                if (Objects.equals(userCartItem.getProduct().getId(), sessionCartItem.getProduct().getId())) {
-//                    // Increase the quantity of the existing product in the user's cart
-//                    userCartItem.setQuantity(userCartItem.getQuantity() + sessionCartItem.getQuantity());
-//                    cartItemRepository.save(userCartItem);
-//                    productExists = true;
-//                    break;
-//                }
-//            }
-//
-//            // If the product doesn't exist in the user's cart, add it
-//            if (!productExists) {
-//                CartItem newItem = CartItem.builder()
-//                        .product(sessionCartItem.getProduct())
-//                        .quantity(sessionCartItem.getQuantity())
-//                        .build();
-//                userCart.getCartItems().add(newItem);
-//                cartItemRepository.save(newItem);
-//            }
-//        }
-//
-//        // Save the updated user's cart
-//        cartRepository.save(userCart);
-//
-//        // Clear the session cart
-//        sessionCart.getCartItems().clear();
-//        cartRepository.save(sessionCart);
-//    }
-
 
 
 
