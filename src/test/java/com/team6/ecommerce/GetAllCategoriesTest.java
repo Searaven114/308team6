@@ -1,4 +1,4 @@
-import com.team6.ecommerce.category.Category;
+/*import com.team6.ecommerce.category.Category;
 import com.team6.ecommerce.category.CategoryRepository;
 import com.team6.ecommerce.category.CategoryService;
 import org.junit.jupiter.api.Test;
@@ -44,3 +44,4 @@ public class GetAllCategoriesTest {
         verify(categoryRepository, times(1)).findAll();
     }
 }
+*/

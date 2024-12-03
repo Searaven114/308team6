@@ -49,7 +49,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid userId provided.");
         }
 
-        log.info("[OrderController][getOrdersByUser] Fetching orders for userId: {}", userId);
+        //log.info("[OrderController][getOrdersByUser] Fetching orders for userId: {}", userId);
 
         // Fetch orders for the user
         List<Order> orders = orderService.fetchOrdersByUserId(userId);
@@ -59,7 +59,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No orders found for the given user ID.");
         }
 
-        log.info("[OrderController][getOrdersByUser] Found {} orders for userId: {}", orders.size(), userId);
+        //log.info("[OrderController][getOrdersByUser] Found {} orders for userId: {}", orders.size(), userId);
         return ResponseEntity.ok(orders);
     }
 
@@ -73,7 +73,7 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{orderId}")
     public ResponseEntity<?> getOrderById(@PathVariable String orderId) {
-        log.info("[OrderController][getOrderById] Fetching order with ID: {}", orderId);
+        //log.info("[OrderController][getOrderById] Fetching order with ID: {}", orderId);
 
         // Validate orderId
         if (orderId == null || orderId.trim().isEmpty()) {
@@ -89,7 +89,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found.");
         }
 
-        log.info("[OrderController][getOrderById] Retrieved order with ID: {}", orderId);
+        //log.info("[OrderController][getOrderById] Retrieved order with ID: {}", orderId);
         return ResponseEntity.ok(order.get());
     }
 

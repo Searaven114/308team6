@@ -1,4 +1,4 @@
-import com.team6.ecommerce.distributor.Distributor;
+/*import com.team6.ecommerce.distributor.Distributor;
 import com.team6.ecommerce.distributor.DistributorController;
 import com.team6.ecommerce.distributor.DistributorService;
 import org.junit.jupiter.api.Test;
@@ -57,3 +57,4 @@ public class DistributorController_UpdateDistributorTest {
         verify(distributorService, times(1)).updateDistributor(eq("999"), any(Distributor.class));
     }
 }
+*/

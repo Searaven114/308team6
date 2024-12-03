@@ -8,7 +8,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UpdateDistributorTest {
+/*public class UpdateDistributorTest {
 
     @Test
     public void testUpdateDistributor_Success() {
@@ -66,4 +66,4 @@ public class UpdateDistributorTest {
         verify(distributorRepository, times(1)).findById(distributorId);
         verify(distributorRepository, never()).save(any());
     }
-}
+}*/

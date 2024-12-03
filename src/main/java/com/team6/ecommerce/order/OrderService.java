@@ -109,7 +109,7 @@ public class OrderService {
 
 
 
-    @Scheduled(fixedRate = 60000) // Runs every 1 minute
+    @Scheduled(fixedRate = 15000)
     public void simulateOrderStatus() {
         log.info("[OrderService][simulateOrderStatus] Starting order status simulation...");
 
@@ -135,7 +135,7 @@ public class OrderService {
 
 
 
-    @Scheduled(fixedRate = 180000) // Runs every 3 minutes
+    @Scheduled(fixedRate = 23000)
     public void simulateDeliveryStatus() {
         log.info("[OrderService][simulateDeliveryStatus] Starting delivery status simulation...");
 

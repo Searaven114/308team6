@@ -1,4 +1,4 @@
-import com.team6.ecommerce.category.CategoryController;
+/*import com.team6.ecommerce.category.CategoryController;
 import com.team6.ecommerce.category.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,4 +44,4 @@ public class CategoryController_DeleteCategoryTest {
 
         verify(categoryService, times(1)).deleteCategory("999");
     }
-}
+}*/

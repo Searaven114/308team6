@@ -2,6 +2,7 @@ package com.team6.ecommerce.cart;
 
 import com.team6.ecommerce.cart.dto.CheckoutResponseDTO;
 import com.team6.ecommerce.cartitem.CartItem;
+import com.team6.ecommerce.cartitem.CartItem2;
 import com.team6.ecommerce.constants.Strings;
 import com.team6.ecommerce.exception.UserNotFoundException;
 import com.team6.ecommerce.invoice.Invoice;
@@ -306,8 +307,22 @@ public class CartService {
             }
 
             product.setQuantityInStock(product.getQuantityInStock() - item.getQuantity());
+
             productRepo.save(product);
+
+            log.info("[CartService][Checkout] Product '{}' stock reduced by {} units. Remaining stock: {}. User ID: {}",
+                    product.getTitle(), item.getQuantity(), product.getQuantityInStock(), userId);
+
         }
+
+        // Convert CartItem to CartItem2
+        List<CartItem2> cartItem2List = cart.getCartItems().stream()
+                .map(item -> CartItem2.builder()
+                        .productName(item.getProduct().getTitle())
+                        .quantity(item.getQuantity())
+                        .price(item.getProduct().getBasePrice())
+                        .build())
+                .toList();
 
         // Create Order
         Order order = Order.builder()
@@ -330,6 +345,7 @@ public class CartService {
                 .totalAmount(cart.getTotalPrice())
                 .invoiceDate(new Date())
                 .email(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getEmail())
+                .purchasedItems(cartItem2List)
                 .build();
 
         invoiceRepo.save(invoice);
@@ -355,9 +371,8 @@ public class CartService {
         cartRepo.save(cart);
 
         log.info("[CartService][Checkout] Cart cleared for user ID: {}", userId);
-
-
         log.info("[CartService][Checkout] Checkout completed for user ID: {}", userId);
+        log.info("[CartService][Checkout] Order ID: {} has been delegated to Delivery Department.", order.getId());
         return response;
     }
 

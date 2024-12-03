@@ -91,14 +91,14 @@ public class CommentPopulator {
                 new Comment("27", users.get(4).getId(), "Love it, the quality is superb!", 5, true),
                 new Comment("28", users.get(1).getId(), "I would avoid this product, poor quality.", 1, true),
                 new Comment("29", users.get(3).getId(), "Excellent product, I'm very happy with it.", 5, true),
-                new Comment("30", users.get(5).getId(), "Quite happy with it, good value for money.", 4, true),
-                new Comment("31", users.get(0).getId(), "Totally disappointing, waste of money.", 1, true),
-                new Comment("32", users.get(1).getId(), "Terrible quality, didn't work at all.", 1, true),
-                new Comment("33", users.get(2).getId(), "Worst purchase I've made in years.", 1, true),
-                new Comment("34", users.get(3).getId(), "The product is broken, no good.", 1, true),
-                new Comment("35", users.get(4).getId(), "Very bad experience, will never buy again.", 1, true),
-                new Comment("36", users.get(5).getId(), "Horrible, would not recommend to anyone.", 1, true),
-                new Comment("37", users.get(6).getId(), "The worst product ever, complete failure.", 1, true)
+                new Comment("20", users.get(5).getId(), "Quite happy with it, good value for money.", 4, true),
+                new Comment("21", users.get(0).getId(), "Totally disappointing, waste of money.", 1, true),
+                new Comment("22", users.get(1).getId(), "Terrible quality, didn't work at all.", 1, true),
+                new Comment("23", users.get(2).getId(), "Worst purchase I've made in years.", 1, true),
+                new Comment("24", users.get(3).getId(), "The product is broken, no good.", 1, true),
+                new Comment("25", users.get(4).getId(), "Very bad experience, will never buy again.", 1, true),
+                new Comment("26", users.get(5).getId(), "Horrible, would not recommend to anyone.", 1, true),
+                new Comment("30", users.get(6).getId(), "The worst product ever, complete failure. 0", 0, true)
         );
 
 

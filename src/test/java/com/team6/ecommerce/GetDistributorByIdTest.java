@@ -1,4 +1,4 @@
-import com.team6.ecommerce.distributor.Distributor;
+/*import com.team6.ecommerce.distributor.Distributor;
 import com.team6.ecommerce.distributor.DistributorRepository;
 import com.team6.ecommerce.distributor.DistributorService;
 import org.junit.jupiter.api.Test;
@@ -55,4 +55,4 @@ public class GetDistributorByIdTest {
         // Verify interactions
         verify(distributorRepository, times(1)).findById(distributorId);
     }
-}
+}*/

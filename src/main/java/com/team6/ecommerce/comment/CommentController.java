@@ -33,7 +33,7 @@ public class CommentController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add-comment")
-    public ResponseEntity<?> addComment(@RequestBody @Valid CommentDTO dto) {
+    public ResponseEntity<?> addComment(@RequestBody CommentDTO dto) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
@@ -46,16 +46,17 @@ public class CommentController {
 
         if (result.equals(Strings.COMMENT_ADDED_SUCCESS)){
             return ResponseEntity.ok().body(result);
-        } else if (result.equals(Strings.CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED)){
+        } /*else if (result.equals(Strings.CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED)){
 
             return ResponseEntity.status(403).body(result);
 
-        } else if (result.equals( Strings.DUPLICATE_COMMENT_BLOCKED)){
+        } *//*else if (result.equals( Strings.DUPLICATE_COMMENT_BLOCKED)){
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(result);
 
-        } else {
-            return ResponseEntity.badRequest().body(result);
+        } */else {
+            //return ResponseEntity.badRequest().body(result);
+            return ResponseEntity.ok().body(result);
         }
     }
 

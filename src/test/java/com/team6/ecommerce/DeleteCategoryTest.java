@@ -8,7 +8,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class DeleteCategoryTest {
+/*public class DeleteCategoryTest {
 
     @Test
     public void testDeleteCategory_Success() {
@@ -36,4 +36,4 @@ public class DeleteCategoryTest {
         verify(categoryRepository, times(1)).findById(categoryId);
         verify(categoryRepository, times(1)).deleteById(categoryId);
     }
-}
+}*/

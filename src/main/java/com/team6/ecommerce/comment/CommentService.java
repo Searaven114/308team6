@@ -47,7 +47,6 @@ public class CommentService {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-    @PreAuthorize("isAuthenticated()")
     public String addComment(String userId, CommentDTO dto) {
 
         // Validate user existence
@@ -68,13 +67,13 @@ public class CommentService {
             return Strings.CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED;
         }
 
-        boolean dahaonceyorumyaptimi = commentRepo.existsCommentByUserId(userId);
+        /*boolean dahaonceyorumyaptimi = commentRepo.existsCommentByUserId(userId);
 
         if (dahaonceyorumyaptimi) {
 
             log.info("[CommentService][addComment] User {} has attempted to make an another comment for product {} but he already did that before so new comment is discarded..", userId, productId);
             return Strings.DUPLICATE_COMMENT_BLOCKED;
-        }
+        }*/
 
         // Create and save the comment
         Comment comment = new Comment();

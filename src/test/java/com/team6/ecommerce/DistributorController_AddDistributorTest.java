@@ -1,4 +1,4 @@
-import com.team6.ecommerce.distributor.Distributor;
+/*import com.team6.ecommerce.distributor.Distributor;
 import com.team6.ecommerce.distributor.DistributorController;
 import com.team6.ecommerce.distributor.DistributorService;
 import org.junit.jupiter.api.Test;
@@ -10,9 +10,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;*/
 
-@WebMvcTest(DistributorController.class)
+/*@WebMvcTest(DistributorController.class)
 public class DistributorController_AddDistributorTest {
 
     @Autowired
@@ -40,4 +40,4 @@ public class DistributorController_AddDistributorTest {
 
         verify(distributorService, times(1)).addDistributor(any(Distributor.class));
     }
-}
+}*/

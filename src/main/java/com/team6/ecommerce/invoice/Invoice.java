@@ -2,6 +2,7 @@ package com.team6.ecommerce.invoice;
 
 
 
+import com.team6.ecommerce.cartitem.CartItem2;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -27,5 +29,5 @@ public class Invoice {
     private String email;
 
     // New field to track purchased items (productId -> quantity)
-    private Map<String, Integer> purchasedItems;
+    private List<CartItem2> purchasedItems;
 }

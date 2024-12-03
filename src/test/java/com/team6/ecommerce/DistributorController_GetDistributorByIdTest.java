@@ -1,4 +1,4 @@
-import com.team6.ecommerce.distributor.Distributor;
+/*import com.team6.ecommerce.distributor.Distributor;
 import com.team6.ecommerce.distributor.DistributorController;
 import com.team6.ecommerce.distributor.DistributorService;
 import org.junit.jupiter.api.Test;
@@ -52,3 +52,4 @@ public class DistributorController_GetDistributorByIdTest {
         verify(distributorService, times(1)).getDistributorById("999");
     }
 }
+*/

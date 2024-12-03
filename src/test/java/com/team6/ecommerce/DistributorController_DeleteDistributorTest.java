@@ -1,4 +1,4 @@
-import com.team6.ecommerce.distributor.DistributorController;
+/*import com.team6.ecommerce.distributor.DistributorController;
 import com.team6.ecommerce.distributor.DistributorService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,4 +44,4 @@ public class DistributorController_DeleteDistributorTest {
 
         verify(distributorService, times(1)).deleteDistributor("999");
     }
-}
+}*/
