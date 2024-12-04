@@ -1,8 +1,11 @@
-package com.team6.ecommerce.order;
+package com.team6.ecommerce;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.team6.ecommerce.order.Order;
+import com.team6.ecommerce.order.OrderRepository;
+import com.team6.ecommerce.order.OrderService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

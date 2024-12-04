@@ -1,3 +1,5 @@
+package com.team6.ecommerce;
+
 import com.team6.ecommerce.distributor.Distributor;
 import com.team6.ecommerce.distributor.DistributorRepository;
 import com.team6.ecommerce.distributor.DistributorService;

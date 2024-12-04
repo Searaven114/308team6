@@ -1,3 +1,5 @@
+package com.team6.ecommerce;
+
 import com.team6.ecommerce.category.Category;
 import com.team6.ecommerce.category.CategoryRepository;
 import com.team6.ecommerce.category.CategoryService;
