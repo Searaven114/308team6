@@ -27,27 +27,7 @@ public class OrderController {
     @GetMapping("/user/orders")
     public ResponseEntity<?> getOrdersByUser() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("[OrderController][getOrdersByUser] Unauthorized access attempt.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
-
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("[OrderController][getOrdersByUser] Invalid principal type.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
-
-        User user = (User) auth.getPrincipal();
-
-        String userId = user.getId();
-
-        // Validate userId
-        if (userId == null || userId.trim().isEmpty()) {
-            log.error("[OrderController][getOrdersByUser] Invalid userId provided.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid userId provided.");
-        }
+        String userId = getAuthenticatedUserId("getOrdersByUser");
 
         //log.info("[OrderController][getOrdersByUser] Fetching orders for userId: {}", userId);
 
@@ -117,4 +97,24 @@ public class OrderController {
         log.info("[OrderController][getOrdersByStatus] Retrieved {} orders with status: {}", orders.size(), status);
         return ResponseEntity.ok(orders);
     }
+
+
+    /**
+     * Private helper to retrieve the authenticated user's ID with method name for logging.
+     */
+    private String getAuthenticatedUserId(String methodName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("[OrderController][{}] Unauthorized access attempt.", methodName);
+            throw new IllegalStateException("User is not authenticated.");
+        }
+        if (!(authentication.getPrincipal() instanceof User)) {
+            log.warn("[OrderController][{}] Invalid principal type.", methodName);
+            throw new IllegalStateException("Invalid user principal.");
+        }
+        User user = (User) authentication.getPrincipal();
+        log.info("[OrderController][{}] Authenticated user ID: {}", methodName, user.getId());
+        return user.getId();
+    }
+
 }

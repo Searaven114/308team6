@@ -91,15 +91,9 @@ public class UserService{
 
 
 
-    public ProfileDTO getProfile() {
+    public ProfileDTO getProfile(String userId) {
 
-        // Retrieving the Principal from security context to satisfy authorization
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
+        User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return ProfileDTO.builder()
                 .age(user.getAge())
@@ -109,29 +103,6 @@ public class UserService{
                 .phone(user.getPhone())
                 .registerDate(user.getRegisterDate())
                 .build();
-    }
-
-
-
-    @Secured({"ROLE_ADMIN"})
-    public void deleteProfileAdmin(String id) {
-
-        if (id != null) {
-            //TODO dedigim gibi, kullanıcının arkada ona baglı bir kayıt bırakmaması lazım
-
-            Optional<User> user = userRepo.findById(id);
-
-            user.ifPresent( target -> {
-
-                log.info("[UserService] Setting isActive of user with id: {}", id);
-                target.setIsActive(false);
-                //TODO Cleanup...
-
-            });
-
-        } else {
-            throw new RuntimeException("User not found");
-        }
     }
 
 
@@ -148,8 +119,9 @@ public class UserService{
 //    }
 
 
-    public ResponseEntity<?> addAddress(String id, AddressDTO dto) {
-        User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("[UserService] User not found"));
+    public ResponseEntity<?> addAddress(String userId, AddressDTO dto) {
+
+        User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException("[UserService] User not found"));
 
         Address address = new Address();
         address.setStreet(dto.getStreet());

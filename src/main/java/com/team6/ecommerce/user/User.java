@@ -43,9 +43,8 @@ public class User implements UserDetails {
     private String registerIp;
     private String registerDate;
     private String cartId;
-    //private List<Order> orders = new ArrayList<>();
+    private String wishlistId; //todo user creation (register) a eklenmesi lazım wishlist field initinin
     private Boolean isActive = true;
-    private List<String> wishlist = new ArrayList<>();
 
 
     public User(String email, String password, String name, String surname, String phone, String age, String taxId, List<Address> addresses, Set<String> roles, String registerIp, String registerDate, String cartId) {

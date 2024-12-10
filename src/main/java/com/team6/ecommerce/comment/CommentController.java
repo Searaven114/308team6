@@ -26,8 +26,6 @@ import java.util.Set;
 @RequestMapping("/api/comments")
 public class CommentController {
 
-    //validasyon yetersiz
-
     private final CommentService commentService;
 
 
@@ -35,14 +33,13 @@ public class CommentController {
     @PostMapping("/add-comment")
     public ResponseEntity<?> addComment(@RequestBody CommentDTO dto) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String userId = getAuthenticatedUserId("addComment");
 
         log.info("[CommentController][addComment] Adding comment for productId: {}", dto.getProductId());
 
-        log.info("[CommentController][addComment] User ID: {} is adding a comment", user.getId());
+        log.info("[CommentController][addComment] User ID: {} is adding a comment", userId);
 
-        String result = commentService.addComment(user.getId(), dto);
+        String result = commentService.addComment(userId, dto);
 
         if (result.equals(Strings.COMMENT_ADDED_SUCCESS)){
             return ResponseEntity.ok().body(result);
@@ -60,46 +57,8 @@ public class CommentController {
         }
     }
 
-    //todo batudaki son kod bu
-    /*@PreAuthorize("isAuthenticated()")
-    public String addComment(String userId, CommentDTO dto) {
-
-        // Validate user existence
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
-        String productId = dto.getProductId();
-
-        // Fetch user's orders using OrderService
-        List<Order> userOrders = orderService.fetchOrdersByUserId(userId);
-
-        // Validate if the user has purchased the product
-        boolean hasPurchased = userOrders.stream()
-                .flatMap(order -> order.getCart().getCartItems().stream())
-                .anyMatch(cartItem -> cartItem.getProduct().getId().equals(productId));
-
-        if (!hasPurchased) {
-            log.info("[CommentService][addComment] User {} has not purchased the product {} but attempted to make a comment on it.", userId, productId);
-            return Strings.CANNOT_COMMENT_ON_PRODUCT_DUE_TO_NOT_PURCHASED;
-        }
-
-        // Create and save the comment
-        Comment comment = new Comment();
-        comment.setProductId(dto.getProductId());
-        comment.setContent(dto.getContent());
-        comment.setUserId(userId);
-        comment.setRating(dto.getRating());
-        comment.setApproved(false);
-        comment.setCreatedDate(LocalDateTime.now());
-
-        commentRepo.save(comment);
-        log.info("[CommentService][addComment] Comment added: {}", comment);
-
-        return Strings.COMMENT_ADDED_SUCCESS;
-    }*/
-
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-    //Asıl kullanılacak bu endpoint, paginated değil komple liste döndürüyor.
     @GetMapping("/{productId}")
     public List<Comment> getApprovedComments(@PathVariable String productId) {
 
@@ -122,12 +81,11 @@ public class CommentController {
     @PostMapping("/approve-comment/{commentId}")
     public ResponseEntity<?> approveComment(@RequestParam String commentId) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String userId = getAuthenticatedUserId("approveComment");
 
         commentService.approveComment(commentId);
 
-        log.info("[CommentController][approveComment] Comment ID: {} approved by User ID: {}", commentId, user.getId());
+        log.info("[CommentController][approveComment] Comment ID: {} approved by User ID: {}", commentId, userId);
 
         return ResponseEntity.ok().build();
     }
@@ -136,6 +94,7 @@ public class CommentController {
 
     @GetMapping("/{productId}/get-avg-rating")
     public double getAvgRating(@PathVariable String productId) {
+
         double avgRating = commentService.calculateAverageRating(productId);
 
         log.info("[CommentController][getAvgRating] Average rating for productId: {} is {}", productId, avgRating);
@@ -147,9 +106,32 @@ public class CommentController {
 
     @GetMapping("/products/avg-ratings")
     public Map<String, Double> getAvgRatings(@RequestParam List<String> productIds) {
+
         log.info("[CommentController][getAvgRatings] Calculating average ratings for productIds: {}", productIds);
+
         Map<String, Double> avgRatings = commentService.calculateAverageRatings(productIds);
+
         log.info("[CommentController][getAvgRatings] Calculated average ratings for {} products", avgRatings.size());
+
         return avgRatings;
+    }
+
+
+    /**
+     * Private helper to retrieve the authenticated user's ID with method name for logging.
+     */
+    private String getAuthenticatedUserId(String methodName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("[CommentController][{}] Unauthorized access attempt.", methodName);
+            throw new IllegalStateException("User is not authenticated.");
+        }
+        if (!(authentication.getPrincipal() instanceof User)) {
+            log.warn("[CommentController][{}] Invalid principal type.", methodName);
+            throw new IllegalStateException("Invalid user principal.");
+        }
+        User user = (User) authentication.getPrincipal();
+        log.info("[CommentController][{}] Authenticated user ID: {}", methodName, user.getId());
+        return user.getId();
     }
 }

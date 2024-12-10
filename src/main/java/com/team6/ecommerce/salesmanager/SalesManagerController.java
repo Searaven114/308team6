@@ -27,22 +27,7 @@ public class SalesManagerController {
     //private final NotificationService notificationService;
 
 
-
-    // The sales managers are responsible for setting the prices of the products. TAMAM
-
-    // They shall set a discount on the selected items. When the "discount rate" and the "products" are given, the system automatically sets the new price and notify the users, whose wish list include the discounted product, about the discount.
-
-    // They shall also view all the invoices in a given date range, can print them or save them as “pdf” files.
-
-            // bir şekilde invoiceleri saklamamız lazım db de, id, isim, date, ve multipart falan koyacaz herhalde
-
-    // Last but not least, they shall calculate the revenue and loss/profit in between given dates and view a chart of it.
-
-            //loss u nasıl simüle edecez aq, chart kısmı kolay, vardır kütüphanesi
-
-
-
-    @Secured({"ROLE_PRODUCTMANAGER", "ROLE_ADMIN"})
+    @Secured({"ROLE_SALESMANAGER", "ROLE_ADMIN"})
     @PostMapping("/product/{id}/update-price/{price}")
     public ResponseEntity<?> updateProductPrice(@PathVariable String id, @PathVariable double price) {
 
@@ -70,29 +55,18 @@ public class SalesManagerController {
     @PostMapping("/product/{id}/apply-discount/{discountRate}")
     public ResponseEntity<?> applyDiscount(@PathVariable String id, @PathVariable double discountRate) {
 
-        try {
-            if (discountRate < 0 || discountRate > 100) {
-                return ResponseEntity.badRequest().body("Discount rate must be between 0 and 100.");
-            }
-
-            Product discountedProduct = productService.applyDiscount(id, discountRate);
-
-            //TODO BURADA NOTIFICATION SERVİSİNİN ÇAĞRILMASI LAZIM DISCOUNTU HABER ETMEK ICIN
-            //notificationService.notifyUsersAboutDiscount(...);
-
-            return ResponseEntity.ok(discountedProduct);
-
-        } catch (ProductNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        if (discountRate < 0 || discountRate > 100) {
+            return ResponseEntity.badRequest().body("Discount rate must be between 0 and 100."); //invalidargumentexception de döndürebilir belki
         }
+
+        Product discountedProduct = productService.applyDiscount(id, discountRate);
+
+        //notificationService.notifyUsersAboutDiscount(...);
+
+        return ResponseEntity.ok(discountedProduct);
+
+
     }
-
-
-
-
 
 
 

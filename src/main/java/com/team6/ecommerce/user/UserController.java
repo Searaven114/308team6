@@ -4,6 +4,7 @@ package com.team6.ecommerce.user;
 import com.github.javafaker.Bool;
 import com.team6.ecommerce.address.Address;
 import com.team6.ecommerce.address.AddressDTO;
+import com.team6.ecommerce.exception.UserNotFoundException;
 import com.team6.ecommerce.user.dto.*;
 import com.team6.ecommerce.exception.UserRegistrationException;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
@@ -32,77 +34,54 @@ public class UserController {
     @PostMapping(value = "/user/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegistrationDTO dto) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = getAuthenticatedUserId("registerUser");
 
-        if (authentication != null ) {
-            log.info("User {} is trying to register", authentication.getName());
-        }
+        String response = userService.registerUser(dto);
 
-//        if (authentication != null && authentication.isAuthenticated()) {
-//            log.warn("[UserController][registerUser] Attempt to register while already logged in by user: {}", authentication.getName());
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logged-in users cannot register.");
-//        }
+        if (response.equals("User created successfully")) {
+            return ResponseEntity.ok().body(response);
+        };
 
-        try {
-            String response = userService.registerUser(dto);
-            if (response.equals("User created successfully")) {
-                return ResponseEntity.ok().body(response);
-            };
-        } catch (UserRegistrationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurredregisterUser");
     }
 
-//    @PostMapping(value = "/user/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> updateUser(@RequestBody @Valid )
 
 
 
 
-
-    @Secured({"ROLE_CUSTOMER", "ROLE_ADMIN", "ROLE_SALESMANAGER", "ROLE_PRODUCTMANAGER", "PRODUCTMANAGER"})
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/user/profile")
     public ResponseEntity<?> showProfile() {
         try {
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null) {
-                authentication.getAuthorities().forEach(authority -> {
-                    log.info("Authority: " + authority.getAuthority());
-                });
-            }
+            String userId = getAuthenticatedUserId("showProfile");
 
-            ProfileDTO profile = userService.getProfile();
+            ProfileDTO profile = userService.getProfile(userId);
+
             return ResponseEntity.ok().body(profile);
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("USER NOT FOUND");
         }
     }
 
+    //duzenlenmeli
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/user/address")
     public ResponseEntity<?> getUserAddress() {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.warn("Unauthorized access: No authentication.");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-            }
 
-            if (!(authentication.getPrincipal() instanceof User)) {
-                log.warn("Invalid principal type: {}", authentication.getPrincipal());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-            }
+            String userId = getAuthenticatedUserId("getUserAddress");
 
-            User user = (User) authentication.getPrincipal();
+            User user = userRepo.findById(userId).orElseThrow( () -> new UserNotFoundException("User not found") );
 
-            Address address = user.getAddresses().get( user.getAddresses().size() - 1);
+            Address address = user.getAddresses().get(user.getAddresses().size() - 1);
 
             AddressDTO dto = AddressDTO.builder().street(address.getStreet())
                     .city(address.getStreet())
                     .zipCode(address.getZipCode())
-                    .country( address.getCountry())
-                    .notes( address.getNotes())
+                    .country(address.getCountry())
+                    .notes(address.getNotes())
                     .build();
 
             if (address == null) {
@@ -110,67 +89,23 @@ public class UserController {
             }
 
             return ResponseEntity.ok().body(dto);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    //TODO BUNU ADMIN CONTROLLERINE TAŞI ! USERSERVICE ORADA CAGRILSIN
-//    @Secured({"ROLE_ADMIN"})
-//    @DeleteMapping("/user/{id}")
-//    public ResponseEntity<?> deleteUserByAdmin(@PathVariable(required = true) String id) {
-//
-//
-//        User userToDelete = userRepo.findById(id).orElse(null);
-//
-//        if (userToDelete == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//        }
-//
-//        userService.deleteProfileAdmin(id);
-//        return ResponseEntity.ok("User deleted successfully");
-//    }
 
-
-//    @DeleteMapping("/user/delete")
-//    public ResponseEntity<?> deleteOwnProfile() {
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String mail = authentication.getName();
-//
-//        User user = userRepo.findByEmail(mail);
-//
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//        }
-//
-//        userService.deleteProfile(user.getId());
-//        return ResponseEntity.ok("Your profile has been deleted successfully");
-//    }
-
-    //todo register -> add address -> checkout seneryosu
     @PostMapping("/account/address")
     public ResponseEntity<?> addAddressToAccount(@RequestBody @Valid AddressDTO dto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("Unauthorized access: No authentication.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
+        String userId = getAuthenticatedUserId("getUserAddress");
 
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("Invalid principal type: {}", auth.getPrincipal());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
+        User user = userRepo.findById(userId).orElseThrow( () -> new UserNotFoundException("User not found") );
 
-        User user = (User) auth.getPrincipal();
+        log.info("[UserController][addAddressToAccount] User {} is adding a new address", user.getEmail());
 
-        if (user == null) {
-            log.error("Unexpected error: Authenticated principal is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authenticated user not found");
-        }
-
-        log.info("User {} is adding a new address", user.getEmail());
         return userService.addAddress(user.getId(), dto);
     }
 
@@ -201,5 +136,21 @@ public class UserController {
 
 
 
-
+    /**
+     * Private helper to retrieve the authenticated user's ID with method name for logging.
+     */
+    private String getAuthenticatedUserId(String methodName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("[UserController][{}] Unauthorized access attempt.", methodName);
+            throw new IllegalStateException("User is not authenticated.");
+        }
+        if (!(authentication.getPrincipal() instanceof User)) {
+            log.warn("[UserController][{}] Invalid principal type.", methodName);
+            throw new IllegalStateException("Invalid user principal.");
+        }
+        User user = (User) authentication.getPrincipal();
+        log.info("[UserController][{}] Authenticated user ID: {}", methodName, user.getId());
+        return user.getId();
+    }
 }

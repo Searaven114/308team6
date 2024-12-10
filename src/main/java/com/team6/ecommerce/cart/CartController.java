@@ -9,9 +9,11 @@ import com.team6.ecommerce.payment.dto.PaymentRequest;
 import com.team6.ecommerce.payment.dto.PaymentRequestDTO;
 import com.team6.ecommerce.user.User;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @Log4j2
 @RequestMapping("/api/cart")
@@ -30,25 +32,16 @@ public class CartController {
     private final NotificationService notificationService;
 
 
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<?> fetchUserCart() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = getAuthenticatedUserId("fetchUserCart");
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.warn("[CartController][fetchUserCart] Unauthorized access attempt: No authentication found or user not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
-
-        User user = (User) authentication.getPrincipal();
-
-        String user_id = user.getId();
-
-        Cart cart = cartService.fetchUserCart( user_id );
+        Cart cart = cartService.fetchUserCart( userId );
 
         if (cart.getCartItems().isEmpty()) {
-            log.info("[CartController][fetchUserCart] Cart is empty for user with ID: {}", user_id);
+            log.info("[CartController][fetchUserCart] Cart is empty for user with ID: {}", userId);
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Your cart is empty.");
         }
@@ -59,35 +52,13 @@ public class CartController {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/clear")
     public ResponseEntity<?> clearCart() {
 
-        // Retrieve the authenticated user from the security context
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = getAuthenticatedUserId("clearCart");
 
-        // Check if the authentication object is null or not authenticated
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("[CartController][clearCart]Unauthorized access attempt: No authentication found or user not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
-
-        // Ensure that the principal is of type User
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("[CartController][clearCart]Unauthorized access attempt: Invalid principal type for user: {}", auth.getPrincipal());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
-
-        // Cast the principal to the User class
-        User user = (User) auth.getPrincipal();
-
-        // Double-check if the user object is null
-        if (user == null) {
-            log.error("[CartController][clearCart]Unexpected error: Authenticated principal is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authenticated user not found");
-        }
-
-        String result = cartService.clearUserCart(user.getId());
+        String result = cartService.clearUserCart(userId);
 
         if (Strings.CART_IS_EMPTY.equals(result)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
@@ -98,36 +69,13 @@ public class CartController {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/cart/add")
     public ResponseEntity<String> addProductToCart(@RequestParam String productId, @RequestParam int quantity) {
 
-        // Retrieve the authenticated user from the security context
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = getAuthenticatedUserId("addProductToCart");
 
-        // Check if the authentication object is null or not authenticated
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("[CartController][addProductToCart]Unauthorized access attempt: No authentication found or user not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
-
-        // Ensure that the principal is of type User
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("[CartController][addProductToCart]Unauthorized access attempt: Invalid principal type for user: {}", auth.getPrincipal());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
-
-        // Cast the principal to the User class
-        User user = (User) auth.getPrincipal();
-
-        // Double-check if the user object is null
-        if (user == null) {
-            log.error("[CartController][addProductToCart]sUnexpected error: Authenticated principal is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authenticated user not found");
-        }
-
-        String result = cartService.addItemToUserCart(user.getId(), productId, quantity);
-
+        String result = cartService.addItemToUserCart(userId, productId, quantity);
 
         if (Strings.PRODUCT_NOT_FOUND.equals(result)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
@@ -146,25 +94,13 @@ public class CartController {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/update-quantity")
     public ResponseEntity<String> updateCartItemQuantity(@RequestParam String productId, @RequestParam int quantity) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = getAuthenticatedUserId("updateCartItemQuantity");
 
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("[CartController][updateCartItemQuantity] Unauthorized access attempt.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
-
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("[CartController][updateCartItemQuantity] Invalid principal type.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
-
-        User user = (User) auth.getPrincipal();
-
-        String result = cartService.updateCartItemQuantity(user.getId(), productId, quantity);
+        String result = cartService.updateCartItemQuantity(userId, productId, quantity);
 
         if (Strings.CART_IS_EMPTY.equals(result)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
@@ -181,33 +117,13 @@ public class CartController {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeProductFromCart(@RequestParam String productId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // Check if the authentication object is null or not authenticated
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("[CartController][removeProductFromCart] Unauthorized access attempt: No authentication found or user not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
+        String userId = getAuthenticatedUserId("removeProductFromCart");
 
-        // Ensure that the principal is of type User
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("[CartController][removeProductFromCart] Unauthorized access attempt: Invalid principal type for user: {}", auth.getPrincipal());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
-
-        // Cast the principal to the User class
-        User user = (User) auth.getPrincipal();
-
-        // Double-check if the user object is null
-        if (user == null) {
-            log.error("[CartController][removeProductFromCart] Unexpected error: Authenticated principal is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authenticated user not found");
-        }
-
-        // Call the service to remove the product
-        String result = cartService.removeItemFromUserCart(user.getId(), productId);
+        String result = cartService.removeItemFromUserCart(userId, productId);
 
         if (result.equals(Strings.PRODUCT_NOT_IN_CART)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
@@ -220,139 +136,51 @@ public class CartController {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-//    @PostMapping("/checkout")
-//    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO dto) {
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/checkout")
+    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO paymentRequest) {
+
 //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//
 //        if (auth == null || !auth.isAuthenticated()) {
 //            log.warn("[CartController][Checkout] Unauthorized access attempt.");
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
 //        }
-//
 //        if (!(auth.getPrincipal() instanceof User)) {
 //            log.warn("[CartController][Checkout] Invalid principal type.");
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
 //        }
-//
 //        User user = (User) auth.getPrincipal();
-//
-//        String result = cartService.checkout(user.getId(),dto);
-//
-//        if (Strings.CART_IS_EMPTY.equals(result)) {
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("result");
-//        }
-//
-//
-//        // Check if result contains the "Invoice" keyword
-//        if (result.startsWith("Invoice")) {
-//
-//            //CheckoutResponseDTO CheckoutResponse = new CheckoutResponseDTO();
-//
-//            String invoiceId = result.split(" ")[1]; // Extract invoice ID
-//
-//            Optional<Invoice> invoiceOpt = invoiceService.getInvoiceById(invoiceId); // Assume a service method to fetch invoice
-//
-//            if (invoiceOpt.isPresent()) {
-//                Invoice invoice = invoiceOpt.get();
-//                invoice.setId(user.getEmail());
-//                notificationService.notifyUserWithInvoice(invoice);
-//                return ResponseEntity.ok(invoiceOpt.get());
-//            } else {
-//                log.error("[CartController][Checkout] Invoice ID {} not found", invoiceId);
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving invoice");
-//            }
-//        }
-//
-//        //this is the case in which the returned string doesn't match with any if cases which indicates an error.
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Strings.CART_ERROR);
-//    }
 
+        String userId = getAuthenticatedUserId("checkout");
 
-
-
-//    @PostMapping("/merge")
-//    public ResponseEntity<?> mergeOfflineCart(@RequestBody List<CartItem> offlineCart) {
-//        // Get authenticated user from SecurityContext
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth == null || !auth.isAuthenticated()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-//        }
-//
-//        User user = (User) auth.getPrincipal();
-//
-//        // Fetch the user's logged-in cart
-//        Cart userCart = cartService.fetchUserCart(user.getId());
-//
-//        // Merge offline cart into the logged-in cart
-//        cartService.mergeCarts(userCart, offlineCart);
-//
-//        return ResponseEntity.ok("Offline cart successfully merged with the logged-in cart");
-//    }
-
-
-    @PostMapping("/checkout")
-    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO paymentRequest) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated()) {
-            log.warn("[CartController][Checkout] Unauthorized access attempt.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
-
-        if (!(auth.getPrincipal() instanceof User)) {
-            log.warn("[CartController][Checkout] Invalid principal type.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-        }
-
-        User user = (User) auth.getPrincipal();
-
-        CheckoutResponseDTO response = cartService.checkout(user.getId(), paymentRequest);
+        CheckoutResponseDTO response = cartService.checkout(userId, paymentRequest);
 
         if (response == null) {
-            log.warn("[CartController][Checkout] Checkout failed. Cart might be empty for user ID: {}", user.getId());
+            log.warn("[CartController][Checkout] Checkout failed. Cart might be empty for user ID: {}", userId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Strings.CART_IS_EMPTY);
         }
 
-        log.info("[CartController][Checkout] Checkout successful for user ID: {}", user.getId());
+        log.info("[CartController][Checkout] Checkout successful for user ID: {}", userId);
         return ResponseEntity.ok(response);
     }
 
 
 
-
-    //demo oncesinde silinen
-//    @PostMapping("/checkout")
-//    public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO paymentRequest) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (auth == null || !auth.isAuthenticated()) {
-//            log.warn("[CartController][Checkout] Unauthorized access attempt.");
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-//        }
-//
-//        if (!(auth.getPrincipal() instanceof User)) {
-//            log.warn("[CartController][Checkout] Invalid principal type.");
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-//        }
-//
-//        User user = (User) auth.getPrincipal();
-//
-//        if (user.getAddresses().isEmpty()){
-//            return ResponseEntity.badRequest().body(Strings.NO_ADDRESS_FOUND);
-//        }
-//
-//        Invoice invoice = cartService.checkout(user.getId(), paymentRequest);
-//
-//        if (invoice == null) {
-//            log.warn("[CartController][Checkout] Checkout failed. Cart might be empty for user ID: {}", user.getId());
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Strings.CART_IS_EMPTY);
-//        }
-//
-//        log.info("[CartController][Checkout] Checkout successful for user ID: {}", user.getId());
-//        return ResponseEntity.ok(invoice);
-//    }
-
-
-
-
+    /**
+     * Private helper to retrieve the authenticated user's ID with method name for logging.
+     */
+    private String getAuthenticatedUserId(String methodName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("[CartController][{}] Unauthorized access attempt.", methodName);
+            throw new IllegalStateException("User is not authenticated.");
+        }
+        if (!(authentication.getPrincipal() instanceof User)) {
+            log.warn("[CartController][{}] Invalid principal type.", methodName);
+            throw new IllegalStateException("Invalid user principal.");
+        }
+        User user = (User) authentication.getPrincipal();
+        log.info("[CartController][{}] Authenticated user ID: {}", methodName, user.getId());
+        return user.getId();
+    }
 }
