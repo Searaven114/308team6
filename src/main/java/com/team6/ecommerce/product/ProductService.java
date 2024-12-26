@@ -125,6 +125,32 @@ public class ProductService {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
+//    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
+//    public Product addProduct(ProductDTO productDTO) {
+//        if (productRepo.existsByTitle(productDTO.getTitle())) {
+//            throw new IllegalArgumentException("A product with this title already exists");
+//        }
+//
+//        if (productRepo.existsBySerialNumber(productDTO.getSerialNumber())) {
+//            throw new IllegalArgumentException("A product with this serial number already exists");
+//        }
+//
+//        Product product = new Product(
+//                productDTO.getTitle(),
+//                productDTO.getCategoryId(),
+//                productDTO.getBrand(),
+//                productDTO.getModel(),
+//                productDTO.getSerialNumber(),
+//                productDTO.getDescription(),
+//                productDTO.getQuantityInStock(),
+//                productDTO.getBasePrice(),
+//                productDTO.isWarrantyStatus(),
+//                productDTO.getDistributorId()
+//        );
+//
+//        return productRepo.save(product);
+//    }
+
     @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
     public Product addProduct(ProductDTO productDTO) {
         if (productRepo.existsByTitle(productDTO.getTitle())) {
@@ -145,7 +171,8 @@ public class ProductService {
                 productDTO.getQuantityInStock(),
                 productDTO.getBasePrice(),
                 productDTO.isWarrantyStatus(),
-                productDTO.getDistributorId()
+                productDTO.getDistributorId(),
+                productDTO.getImage() // Assuming image is part of ProductDTO
         );
 
         return productRepo.save(product);

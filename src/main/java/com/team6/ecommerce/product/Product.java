@@ -23,7 +23,7 @@ public class Product {
 
     @Indexed(unique = true)
     @NotBlank
-    @Size(min = 3, message = "Product name must contain atleast 3 characters")
+    @Size(min = 3, message = "Product name must contain at least 3 characters")
     private String title;
 
     @Indexed(unique = true)
@@ -42,23 +42,21 @@ public class Product {
     private String description;
     private int quantityInStock;
 
-    @Min(value = 0, message = "basePrice cannot be lower than 0")
+    @Min(value = 0, message = "Base price cannot be lower than 0")
     private double basePrice;
 
     private boolean warrantyStatus;
     private String distributorId;
 
-    // Popularity metric, updated based on purchases, buna algoritma bulmak lazım hesaplanması için.
+    // Popularity metric, updated based on purchases
     private double popularityPoint;
 
-//    private List<String> images;
-
-
-
+    // New field for storing image as binary data
+    private byte[] image;
 
     // Constructor without id (used when creating new products)
-    public Product(String name, String categoryId, String brand, String model, String serialNumber, String description, int quantityInStock, double basePrice, boolean warrantyStatus, String distributor) {
-        this.title = name;
+    public Product(String title, String categoryId, String brand, String model, String serialNumber, String description, int quantityInStock, double basePrice, boolean warrantyStatus, String distributorId, byte[] image) {
+        this.title = title;
         this.categoryId = categoryId;
         this.brand = brand;
         this.model = model;
@@ -67,14 +65,15 @@ public class Product {
         this.quantityInStock = quantityInStock;
         this.basePrice = basePrice;
         this.warrantyStatus = warrantyStatus;
-        this.distributorId = distributor;
-        this.popularityPoint  = 0;
+        this.distributorId = distributorId;
+        this.popularityPoint = 0;
+        this.image = image;
     }
 
     // Constructor with id (used when retrieving or updating existing products)
-    public Product(String id, String name, String categoryId, String brand, String model, String serialNumber, String description, int quantityInStock, double basePrice, boolean warrantyStatus, String distributor) {
+    public Product(String id, String title, String categoryId, String brand, String model, String serialNumber, String description, int quantityInStock, double basePrice, boolean warrantyStatus, String distributorId, byte[] image) {
         this.id = id;
-        this.title = name;
+        this.title = title;
         this.categoryId = categoryId;
         this.brand = brand;
         this.model = model;
@@ -83,6 +82,8 @@ public class Product {
         this.quantityInStock = quantityInStock;
         this.basePrice = basePrice;
         this.warrantyStatus = warrantyStatus;
-        this.distributorId = distributor;
+        this.distributorId = distributorId;
+        this.popularityPoint = 0;
+        this.image = image;
     }
 }

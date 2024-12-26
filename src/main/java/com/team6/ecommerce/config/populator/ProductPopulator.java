@@ -10,6 +10,7 @@ import com.team6.ecommerce.distributor.DistributorRepository;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.user.UserRepository;
+import com.team6.ecommerce.util.ImageLoader;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -52,6 +54,8 @@ public class ProductPopulator {
 
         List<Product> products = new ArrayList<>();
 
+        Map<String, byte[]> images = ImageLoader.loadProductImages();
+
         monitorCat.ifPresent(category -> products.add(new Product(
                 "1",
                 "Dell UltraSharp Monitor",
@@ -64,7 +68,8 @@ public class ProductPopulator {
                 1000.0,
                 true,
                 "1",
-                20
+                20,
+                images.get("1")
         )));
 
 
@@ -80,7 +85,8 @@ public class ProductPopulator {
                 749.99,
                 true,
                 "2",
-                2
+                2,
+                images.get("1")
         )));
 
 
@@ -96,7 +102,8 @@ public class ProductPopulator {
                 1099.99,
                 true,
                 "2",
-                7
+                7,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -111,7 +118,8 @@ public class ProductPopulator {
                 20.0,
                 true,
                 "1",
-                10
+                10,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> {
@@ -127,7 +135,8 @@ public class ProductPopulator {
                     2499.99,
                     true,
                     "1",
-                    70
+                    70,
+                    images.get("1")
             ));
         });
 
@@ -144,7 +153,8 @@ public class ProductPopulator {
                     1499.99,
                     true,
                     "2",
-                    15
+                    15,
+                    images.get("1")
             ));
         });
 
@@ -161,8 +171,8 @@ public class ProductPopulator {
                     699.99,
                     true,
                     "2",
-
-                    60
+                    60,
+                    images.get("1")
             ));
         });
 
@@ -179,7 +189,8 @@ public class ProductPopulator {
                     1299.99,
                     true,
                     "2",
-                    15
+                    15,
+                    images.get("1")
             ));
         });
 
@@ -197,7 +208,8 @@ public class ProductPopulator {
                     59.99,
                     true,
                     "1",
-                    12
+                    12,
+                    images.get("1")
             ));
         });
 
@@ -216,7 +228,8 @@ public class ProductPopulator {
                     89.99,
                     true,
                     "1",
-                    17
+                    17,
+                    images.get("1")
             ));
         });
 
@@ -232,7 +245,8 @@ public class ProductPopulator {
                 1400.0,
                 true,
                 "2",
-                19
+                19,
+                images.get("1")
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -247,7 +261,8 @@ public class ProductPopulator {
                 1000.0,
                 true,
                 "1",
-                38
+                38,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -262,7 +277,8 @@ public class ProductPopulator {
                 79.99,
                 true,
                 "2",
-                21
+                21,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -277,7 +293,8 @@ public class ProductPopulator {
                 1599.99,
                 true,
                 "1",
-                31
+                31,
+                images.get("1")
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -292,7 +309,8 @@ public class ProductPopulator {
                 849.99,
                 true,
                 "2",
-                51
+                51,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -307,7 +325,8 @@ public class ProductPopulator {
                 49.99,
                 true,
                 "2",
-                12
+                12,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -322,7 +341,8 @@ public class ProductPopulator {
                 999.99,
                 true,
                 "2",
-                57
+                57,
+                images.get("1")
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -337,7 +357,8 @@ public class ProductPopulator {
                 699.99,
                 true,
                 "1",
-                19
+                19,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -352,7 +373,8 @@ public class ProductPopulator {
                 49.99,
                 true,
                 "1",
-                87
+                87,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -367,7 +389,8 @@ public class ProductPopulator {
                 799.99,
                 true,
                 "2",
-                43
+                43,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -382,7 +405,8 @@ public class ProductPopulator {
                 1299.99,
                 true,
                 "1",
-                37
+                37,
+                images.get("1")
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -397,7 +421,8 @@ public class ProductPopulator {
                 699.99,
                 true,
                 "2",
-                65
+                65,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -412,7 +437,8 @@ public class ProductPopulator {
                 99.99,
                 true,
                 "1",
-                59
+                59,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -427,7 +453,8 @@ public class ProductPopulator {
                 699.99,
                 true,
                 "2",
-                29
+                29,
+                images.get("1")
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -442,7 +469,8 @@ public class ProductPopulator {
                 349.99,
                 true,
                 "1",
-                19
+                19,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -457,7 +485,8 @@ public class ProductPopulator {
                 139.99,
                 true,
                 "2",
-                40
+                40,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -472,7 +501,8 @@ public class ProductPopulator {
                 999.99,
                 true,
                 "1",
-                30
+                30,
+                images.get("1")
         )));
 
         monitorCat.ifPresent(category -> products.add(new Product(
@@ -487,7 +517,8 @@ public class ProductPopulator {
                 599.99,
                 true,
                 "2",
-                5
+                5,
+                images.get("1")
         )));
 
         mouseCat.ifPresent(category -> products.add(new Product(
@@ -502,7 +533,8 @@ public class ProductPopulator {
                 149.99,
                 true,
                 "1",
-                2
+                2,
+                images.get("1")
         )));
 
         laptopCat.ifPresent(category -> products.add(new Product(
@@ -517,7 +549,8 @@ public class ProductPopulator {
                 749.99,
                 true,
                 "2",
-                17
+                17,
+                images.get("1")
         )));
 
         productRepo.saveAll(products);
