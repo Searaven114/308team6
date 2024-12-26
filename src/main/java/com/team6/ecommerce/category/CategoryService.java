@@ -1,5 +1,6 @@
 package com.team6.ecommerce.category;
 
+import com.team6.ecommerce.product.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;
@@ -14,7 +15,7 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepo;
-
+    private final ProductRepository productRepo;
 
     public List<Category> getAllActiveCategory() {
         List<Category> categories = categoryRepo.findByIsActiveTrue();
@@ -71,6 +72,22 @@ public class CategoryService {
                     categoryDetails.setId(id);
                     return categoryRepo.save(categoryDetails);
                 });
+    }
+
+
+    public void deleteCategory(String categoryId) {
+        Optional<Category> categoryOptional = categoryRepo.findById(categoryId);
+
+        if (categoryOptional.isPresent()) {
+   
+            productRepo.findByCategoryId(categoryId)
+                    .forEach(product -> productRepo.delete(product));
+
+
+            categoryRepo.deleteById(categoryId);
+        } else {
+            throw new RuntimeException("Category with ID " + categoryId + " not found");
+        }
     }
 }
 
