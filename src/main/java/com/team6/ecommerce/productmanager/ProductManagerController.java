@@ -57,6 +57,16 @@ public class ProductManagerController {
 
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
+    @GetMapping("/delete-category/{id}")
+    public ResponseEntity<?> deleteCategory (@PathVariable String id) {
+
+        return ResponseEntity.ok().body( categoryService.deleteCategory(id));
+
+    }
+
+
+
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━PRODUCT KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
     @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})

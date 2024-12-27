@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,21 +42,15 @@ public class CategoryService {
 
     }
 
-    public void deactivateCategory(String categoryId){
+    @Transactional
+    public boolean deleteCategory(String categoryId) {
+        // Delete all products associated with the category
+        productRepo.findByCategoryId(categoryId)
+                .forEach(product -> productRepo.delete(product));
 
-        Optional<Category> target = categoryRepo.findById(categoryId);
-
-        if (target.isPresent() ){
-            if (target.get().getIsActive()){
-                target.get().setIsActive(false);
-            }
-        }
-
-        // Bu kategoriye bağlı ürünlerin ne olacağına karar verilmeli, ya ürünler o kategori altında gösterilmeyecek (sanırım bu olacak)
-        // ya da o kategoriye bağlı bütün ürünlerin henüz olmayan "isActive" fieldi "false" ye çevirlecek.
-
-
-
+        // Delete the category itself
+        categoryRepo.deleteById(categoryId);
+        return true;
     }
 
 
@@ -74,21 +69,6 @@ public class CategoryService {
                 });
     }
 
-
-    public void deleteCategory(String categoryId) {
-        Optional<Category> categoryOptional = categoryRepo.findById(categoryId);
-
-        if (categoryOptional.isPresent()) {
-   
-            productRepo.findByCategoryId(categoryId)
-                    .forEach(product -> productRepo.delete(product));
-
-
-            categoryRepo.deleteById(categoryId);
-        } else {
-            throw new RuntimeException("Category with ID " + categoryId + " not found");
-        }
-    }
 }
 
 
