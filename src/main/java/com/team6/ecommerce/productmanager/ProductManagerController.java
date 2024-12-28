@@ -3,6 +3,8 @@ package com.team6.ecommerce.productmanager;
 
 import com.team6.ecommerce.category.Category;
 import com.team6.ecommerce.category.CategoryService;
+import com.team6.ecommerce.comment.Comment;
+import com.team6.ecommerce.comment.CommentService;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.product.ProductService;
@@ -27,10 +29,7 @@ public class ProductManagerController {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final ProductRepository productRepo;
-
-//    The product managers shall add/remove products as well as product categories, and manage the stocks.
-
-//    Everything related to stock shall be done by the product manager.
+    private final CommentService commentService;
 
 //    The product manager is also in the role of delivery department since it controls the stock.
 //    This means, the product manager shall view the invoices, products to be delivered, and the corresponding addresses for delivery.
@@ -42,8 +41,6 @@ public class ProductManagerController {
 //          total price,
 //          delivery address,
 //          and a field showing whether the delivery has been completed or not.
-
-//    Last but not least, the product managers shall approve or disapprove the comments. (10%)
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━KATEGORI KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
@@ -64,7 +61,6 @@ public class ProductManagerController {
         return ResponseEntity.ok().body( categoryService.deleteCategory(id));
 
     }
-
 
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━PRODUCT KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
@@ -90,7 +86,38 @@ public class ProductManagerController {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━COMMENT KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-    //comment onaylama endpointi
+    /**
+     * Approve a comment by ID.
+     */
+    @Secured({"ROLE_PRODUCTMANAGER"})
+    @PatchMapping("/comments/{commentId}/approve")
+    public ResponseEntity<?> approveComment(@PathVariable String commentId) {
+        commentService.approveComment(commentId);
+        log.info("[ProductManagerController][approveComment] Comment ID: {} approved successfully.", commentId);
+        return ResponseEntity.ok("Comment approved successfully.");
+    }
+
+    /**
+     * List all unapproved comments.
+     */
+    @Secured({"ROLE_PRODUCTMANAGER"})
+    @GetMapping("/comments/unapproved")
+    public ResponseEntity<List<Comment>> listUnapprovedComments() {
+        List<Comment> unapprovedComments = commentService.getUnapprovedComments();
+        log.info("[ProductManagerController][listUnapprovedComments] Retrieved {} unapproved comments.", unapprovedComments.size());
+        return ResponseEntity.ok(unapprovedComments);
+    }
+
+    /**
+     * List all comments for a product.
+     */
+    @Secured({"ROLE_PRODUCTMANAGER"})
+    @GetMapping("/comments/{productId}")
+    public ResponseEntity<List<Comment>> listCommentsByProduct(@PathVariable String productId) {
+        List<Comment> comments = commentService.getAllCommentsForProduct(productId);
+        log.info("[ProductManagerController][listCommentsByProduct] Retrieved {} comments for product ID: {}", comments.size(), productId);
+        return ResponseEntity.ok(comments);
+    }
 
 
 

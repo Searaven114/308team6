@@ -16,9 +16,6 @@ public class MailService {
 
     private JavaMailSender mailSender;
 
-    public void sendDiscountNotificationMail(String[] recipients, String content){ }
-
-
     public void sendInvoiceMail(String recipient, byte[] pdfContent, String fileName) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -34,6 +31,26 @@ public class MailService {
             throw new RuntimeException("Failed to send email", e);
         }
     }
+
+
+    public void sendDiscountNotificationMail(String[] recipients, String content) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(recipients);
+            helper.setSubject("Exciting Discount on Your Wishlist Item!");
+            helper.setText(content, true); // Enable HTML content if needed
+
+            mailSender.send(message);
+            log.info("[MailService][sendDiscountNotificationMail] Notification sent to {} recipients.", recipients.length);
+        } catch (MessagingException e) {
+            log.error("[MailService][sendDiscountNotificationMail] Failed to send notification email.", e);
+            throw new RuntimeException("Failed to send discount notification email", e);
+        }
+    }
+
+
 
 
 }

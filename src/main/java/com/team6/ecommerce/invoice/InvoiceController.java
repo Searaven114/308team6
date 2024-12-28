@@ -1,7 +1,13 @@
 package com.team6.ecommerce.invoice;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
+@Secured({"ROLE_SALESMANAGER"})
 @RestController("/api")
 public class InvoiceController {
 
@@ -11,33 +17,31 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    // @PostMapping("/invoices")
-    // public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-    //     Invoice newInvoice = invoiceService.createInvoice(invoice);
-    //     return ResponseEntity.ok(newInvoice);
-    // }
+     @PostMapping("/invoices")
+     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
+         Invoice newInvoice = invoiceService.createInvoice(invoice);
+         return ResponseEntity.ok(newInvoice);
+     }
 
-    // @GetMapping("/invoices/{id}")
-    // public ResponseEntity<Invoice> getInvoiceById(@PathVariable String id) {
-    //     Invoice invoice = invoiceService.getInvoiceById(id);
-    //     return ResponseEntity.ok(invoice);
-    // }
+    @GetMapping("/invoices/{id}")
+    public ResponseEntity<Invoice> getInvoiceById(@PathVariable String id) {
+        Optional<Invoice> invoiceOptional = invoiceService.getInvoiceById(id);
 
-    // @GetMapping("/invoices")
-    // public ResponseEntity<List<Invoice>> getAllInvoices() {
-    //     List<Invoice> invoices = invoiceService.getAllInvoices();
-    //     return ResponseEntity.ok(invoices);
-    // }
+        return invoiceOptional
+                .map(ResponseEntity::ok) // If present, return the invoice with 200 OK
+                .orElseGet(() -> ResponseEntity.notFound().build()); // If not present, return 404 Not Found
+    }
 
-    // @PutMapping("/invoices/{id}")
-    // public ResponseEntity<Invoice> updateInvoice(@PathVariable String id, @RequestBody Invoice invoice) {
-    //     Invoice updatedInvoice = invoiceService.updateInvoice(id, invoice);
-    //     return ResponseEntity.ok(updatedInvoice);
-    // }
+     @GetMapping("/invoices")
+     public ResponseEntity<List<Invoice>> getAllInvoices() {
+         List<Invoice> invoices = invoiceService.getAllInvoices();
+         return ResponseEntity.ok(invoices);
+     }
 
-    // @DeleteMapping("/invoices/{id}")
-    // public ResponseEntity<String> deleteInvoice(@PathVariable String id) {
-    //     invoiceService.deleteInvoice(id);
-    //     return ResponseEntity.ok("Invoice deleted successfully");
-    // }
+
+     @DeleteMapping("/invoices/{id}")
+     public ResponseEntity<String> deleteInvoice(@PathVariable String id) {
+         invoiceService.deleteInvoice(id);
+         return ResponseEntity.ok("Invoice deleted successfully");
+     }
 }

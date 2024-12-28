@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -87,5 +88,16 @@ public class WishlistService {
             throw new UserNotFoundException("User not found.");
         }
         //log.info("[WishlistService][validateUser] User validation successful for user ID: {}", userId);
+    }
+
+    public List<String> getUsersByProductInWishlist(String productId) {
+        log.info("[WishlistService][getUsersByProductInWishlist] Fetching users for product ID: {}", productId);
+        List<Wishlist> wishlists = wishlistRepository.findAll();
+        List<String> userIds = wishlists.stream()
+                .filter(wishlist -> wishlist.getProductIds().contains(productId))
+                .map(Wishlist::getUserId)
+                .toList();
+        log.info("[WishlistService][getUsersByProductInWishlist] Found {} users with product ID: {} in their wishlist", userIds.size(), productId);
+        return userIds;
     }
 }

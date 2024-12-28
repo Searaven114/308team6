@@ -1,20 +1,17 @@
-package com.team6.ecommerce.comment;
+package com.team6.ecommerce.rating;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Document(collection = "comments")
-public class Comment {
+@Document(collection = "ratings")
+public class Rating {
 
     @Id
     private String id;
@@ -24,10 +21,5 @@ public class Comment {
 
     private String userId;
 
-    @NotBlank
-    private String content;
-
-    private boolean approved = false;
-
-    private LocalDateTime createdDate;
+    private int rating; // Rating between 1 and 5
 }

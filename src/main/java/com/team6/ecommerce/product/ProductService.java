@@ -1,6 +1,7 @@
 package com.team6.ecommerce.product;
 
 import com.team6.ecommerce.exception.ProductNotFoundException;
+import com.team6.ecommerce.notification.NotificationService;
 import com.team6.ecommerce.product.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepo;
+    private final NotificationService notificationService;
 
     public List<Product> getAllProducts() {
         return productRepo.findAll();
@@ -90,6 +92,7 @@ public class ProductService {
 
             productRepo.save(product);
 
+            //bunu siktir et, sadece discount notifi var
             //notificationService.notifyUsersAboutPriceChange(product);
 
             return product;
@@ -114,7 +117,7 @@ public class ProductService {
 
             productRepo.save(product);
 
-            //notificationService.notifyUsersAboutDiscount(product,discountRate);
+            notificationService.notifyUsersAboutDiscount(id,discountRate);
 
             return product;
         }

@@ -3,6 +3,8 @@ package com.team6.ecommerce.productmanager;
 
 import com.team6.ecommerce.category.Category;
 import com.team6.ecommerce.category.CategoryRepository;
+import com.team6.ecommerce.comment.Comment;
+import com.team6.ecommerce.comment.CommentRepository;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.product.dto.ProductDTO;
@@ -19,26 +21,9 @@ import java.util.Set;
 @Service
 public class ProductManagerService {
 
-    private static ProductRepository productRepo;
-    private static CategoryRepository categoryRepo;
-
-//    The product managers shall add/remove products as well as product categories, and manage the stocks.
-
-//    Everything related to stock shall be done by the product manager.
-
-//    The product manager is also in the role of delivery department since it controls the stock.
-//    This means, the product manager shall view the invoices, products to be delivered, and the corresponding addresses for delivery.
-//      A delivery list has the following properties:
-//          delivery ID,
-//          customer ID,
-//          product ID,
-//          quantity,
-//          total price,
-//          delivery address,
-//          and a field showing whether the delivery has been completed or not.
-
-//    Last but not least, the product managers shall approve or disapprove the comments. (10%)
-
+    private final ProductRepository productRepo;
+    private final CategoryRepository categoryRepo;
+    private final CommentRepository commentRepo;
 
     @Secured({"ROLE_PRODUCTMANAGER"})
     public Set<Category> listAllCategories(){
@@ -88,23 +73,14 @@ public class ProductManagerService {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
-    //Patchmapping ile kullanılacak herhalde idk
-    //public void approveComment()
-
     @Secured({"ROLE_PRODUCTMANAGER"})
-    public List<?> listUnapprovedComments(){
-        return null;
+    public List<Comment> listUnapprovedComments() {
+        return commentRepo.findByApprovedFalse();
     }
 
     @Secured({"ROLE_PRODUCTMANAGER"})
-    public List<?> listAllComments(){
-        return null;
-    }
-
-    @Secured({"ROLE_PRODUCTMANAGER"})
-    public List<?> listCommentsByUser( String userId ){
-        return null;
+    public List<Comment> listAllCommentsForProduct(String productId) {
+        return commentRepo.findByProductId(productId);
     }
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//

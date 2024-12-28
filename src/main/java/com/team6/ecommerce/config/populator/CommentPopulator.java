@@ -22,7 +22,38 @@ import java.util.List;
 import java.util.Optional;
 
 
+@Log4j2
+@AllArgsConstructor
+@Component
+@DependsOn({"dataPopulator"})
+public class CommentPopulator {
 
+    private final CommentRepository commentRepo;
+    private final UserRepository userRepository;
+    private final Faker fake = new Faker();
+
+    @PostConstruct
+    public void init() {
+        log.info("[CommentPopulator] Clearing Comment Collection.");
+        commentRepo.deleteAll();
+
+        List<User> users = userRepository.findAll();
+
+        List<Comment> comments = Arrays.asList(
+                new Comment(null, "1", users.get(0).getId(), "Amazing product! Worth every penny.", true, LocalDateTime.now()),
+                new Comment(null, "2", users.get(1).getId(), "The quality is not as expected, but still decent.", true, LocalDateTime.now()),
+                new Comment(null, "3", users.get(2).getId(), "Highly recommend this to everyone.", true, LocalDateTime.now()),
+                new Comment(null, "4", users.get(3).getId(), "Satisfactory performance for the price.", true, LocalDateTime.now()),
+                new Comment(null, "5", users.get(4).getId(), "Not happy with the purchase, avoid if possible.", false, LocalDateTime.now()),
+                new Comment(null, "6", users.get(5).getId(), "Great value for money, very happy!", true, LocalDateTime.now())
+        );
+
+        commentRepo.saveAll(comments);
+        log.info("[CommentPopulator] Successfully populated {} comments.", comments.size());
+    }
+}
+
+/*
 @Log4j2
 @AllArgsConstructor
 @Component
@@ -107,4 +138,4 @@ public class CommentPopulator {
         commentRepo.saveAll(comments);
     }
 
-}
+}*/

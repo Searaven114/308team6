@@ -8,6 +8,7 @@ import com.team6.ecommerce.wishlist.Wishlist;
 import com.team6.ecommerce.wishlist.WishlistRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
@@ -16,6 +17,7 @@ import java.util.*;
 @Log4j2
 @AllArgsConstructor
 @Component
+@DependsOn({"productPopulator", "dataPopulator"})
 public class WishlistPopulator {
 
     private final UserRepository userRepository;
