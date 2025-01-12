@@ -92,7 +92,17 @@ class DeliveryListServiceTest {
         verify(deliveryRepo, times(1)).findById(deliveryId);
         verify(deliveryRepo, times(1)).save(mockDelivery);
     }
-
+    @Test
+    void testGetPendingDeliveries_EmptyList() {
+        when(deliveryRepo.findByIsCompleted(false)).thenReturn(Collections.emptyList());
+    
+        List<DeliveryList> result = deliveryService.getPendingDeliveries();
+    
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(deliveryRepo, times(1)).findByIsCompleted(false);
+    }
+    
     @Test
     void testUpdateDeliveryStatus_NotFound() {
         String deliveryId = "delivery123";
