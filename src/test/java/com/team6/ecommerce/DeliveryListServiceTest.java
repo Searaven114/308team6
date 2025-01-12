@@ -127,6 +127,17 @@ class DeliveryListServiceTest {
                         .param("isCompleted", "true"))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testDeliveryListIntegrity() {
+        DeliveryList delivery = new DeliveryList();
+        delivery.setId("delivery123");
+        delivery.setCustomerId("customer123");
+        delivery.setCompleted(true);
+    
+        assertEquals("delivery123", delivery.getId());
+        assertEquals("customer123", delivery.getCustomerId());
+        assertTrue(delivery.isCompleted());
+    }
     
     @Test
     void testUpdateDeliveryStatus_NotFound() {
