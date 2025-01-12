@@ -19,6 +19,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pm")
@@ -70,6 +71,48 @@ public class ProductManagerController {
 
 
     //ChangeStock endpointi
+    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
+    @PatchMapping("/product/{id}/change-stock")
+    public ResponseEntity<?> changeStock(
+            @PathVariable String id,
+            @RequestParam String newStock) {
+        try {
+            // Parse the stock value from String to int
+            int stockValue = Integer.parseInt(newStock);
+
+            // Validate stock value (ensure it's non-negative)
+            if (stockValue < 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Stock value cannot be negative.");
+            }
+
+            // Retrieve product by ID directly using repository
+            Optional<Product> productOptional = productRepo.findById(id);
+            if (productOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Product with ID " + id + " not found.");
+            }
+
+            // Update the stock value
+            Product product = productOptional.get();
+            product.setQuantityInStock(stockValue);
+
+            // Save the updated product back to the database
+            Product updatedProduct = productRepo.save(product);
+
+            // Return the updated product
+            return ResponseEntity.ok(updatedProduct);
+
+        } catch (NumberFormatException e) {
+            // Handle invalid number format
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid stock value: " + newStock + ". Please provide a valid number.");
+        } catch (Exception e) {
+            // Handle other exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while updating stock.");
+        }
+    }
 
 
 

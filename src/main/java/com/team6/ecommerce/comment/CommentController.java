@@ -33,12 +33,13 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getApprovedComments(productId));
     }
 
-    @Secured({"ROLE_PRODUCTMANAGER", "ROLE_ADMIN"})
-    @PatchMapping("/{id}/approve")
-    public ResponseEntity<String> approveComment(@PathVariable String id) {
-        commentService.approveComment(id);
-        return ResponseEntity.ok("Comment approved successfully.");
-    }
+    //PM endpointine tasındı
+//    @Secured({"ROLE_PRODUCTMANAGER", "ROLE_ADMIN"})
+//    @PatchMapping("/{id}/approve")
+//    public ResponseEntity<String> approveComment(@PathVariable String id) {
+//        commentService.approveComment(id);
+//        return ResponseEntity.ok("Comment approved successfully.");
+//    }
 
     /**
      * Retrieve the authenticated user's ID.
