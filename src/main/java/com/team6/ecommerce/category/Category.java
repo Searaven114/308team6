@@ -22,13 +22,3 @@ public class Category {
         this.isActive = isActive;
     }
 }
-
-/*
-PROBLEM:
-    ya category'nin içinde bir list of product id's olacak
-
-                            ya da
-
-    product'un içinde categoryId olacak, ben 2.sini yaptım, duruma göre kararın incelenmesi lazım ileride
-    eklenecek özellikler için sorun çıkarmaması için.
- */

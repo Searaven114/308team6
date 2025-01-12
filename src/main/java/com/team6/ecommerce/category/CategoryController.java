@@ -17,10 +17,22 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @DeleteMapping("/{categoryId}")
-    @Secured("ROLE_ADMIN") // Ensures only admin can delete categories
+    @Secured("ROLE_ADMIN") //TODO
     public ResponseEntity<?> deleteCategory(@PathVariable String categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok("Category and related products deleted successfully.");
+    }
+
+
+    @PostMapping("/create")
+    @Secured("ROLE_ADMIN") // Restrict to admin users
+    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+        try {
+            Category createdCategory = categoryService.createCategory(category);
+            return ResponseEntity.ok(createdCategory);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

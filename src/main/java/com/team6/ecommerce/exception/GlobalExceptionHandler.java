@@ -21,8 +21,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
-    //Daha iyi yapılabilir bu response
     @Data
     public static class ErrorResponse {
 

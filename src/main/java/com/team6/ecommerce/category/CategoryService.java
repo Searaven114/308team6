@@ -70,6 +70,16 @@ public class CategoryService {
                 });
     }
 
+    @Transactional
+    public Category createCategory(Category category) {
+
+        if (categoryRepo.existsByName(category.getName())) {
+            throw new IllegalArgumentException("A category with this name already exists.");
+        }
+
+        return categoryRepo.save(new Category(category.getName(), category.getIsActive()));
+    }
+
 }
 
 

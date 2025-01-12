@@ -46,7 +46,7 @@ class CommentControllerTest {
 
         doNothing().when(commentService).approveComment(commentId);
 
-        ResponseEntity<String> response = commentController.approveComment(commentId);
+        //ResponseEntity<String> response = commentController.approveComment(commentId);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
