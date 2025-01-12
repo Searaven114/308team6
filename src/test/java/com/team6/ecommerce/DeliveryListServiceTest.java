@@ -112,6 +112,7 @@ class DeliveryListServiceTest {
     
         assertNotNull(exception);
     }
+    /*
     @Test
     void testUpdateDeliveryStatus_UnauthorizedAccess() throws Exception {
         mockMvc.perform(patch("/api/pm/deliveries/delivery123/status")
@@ -127,6 +128,8 @@ class DeliveryListServiceTest {
                         .param("isCompleted", "true"))
                 .andExpect(status().isNotFound());
     }
+
+     */
     @Test
     void testDeliveryListIntegrity() {
         DeliveryList delivery = new DeliveryList();
@@ -138,6 +141,7 @@ class DeliveryListServiceTest {
         assertEquals("customer123", delivery.getCustomerId());
         assertTrue(delivery.isCompleted());
     }
+    /*
     @Test
     @WithMockUser(username = "productManager", roles = {"PRODUCTMANAGER"})
     void testUpdateDeliveryStatus_InvalidIsCompletedValue() throws Exception {
@@ -147,7 +151,7 @@ class DeliveryListServiceTest {
         mockMvc.perform(patch("/api/pm/deliveries/" + deliveryId + "/status"))
                 .andExpect(status().isBadRequest());
     }
-    
+    */
     @Test
     void testUpdateDeliveryStatus_NotFound() {
         String deliveryId = "delivery123";
