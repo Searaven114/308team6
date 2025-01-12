@@ -128,7 +128,6 @@ public class CartController {
         if (result.equals(Strings.PRODUCT_NOT_IN_CART)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
         }
-
         return ResponseEntity.ok(result);
     }
 
@@ -139,17 +138,6 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@RequestBody PaymentRequestDTO paymentRequest) {
-
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth == null || !auth.isAuthenticated()) {
-//            log.warn("[CartController][Checkout] Unauthorized access attempt.");
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-//        }
-//        if (!(auth.getPrincipal() instanceof User)) {
-//            log.warn("[CartController][Checkout] Invalid principal type.");
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user type");
-//        }
-//        User user = (User) auth.getPrincipal();
 
         String userId = getAuthenticatedUserId("checkout");
 
@@ -165,10 +153,8 @@ public class CartController {
     }
 
 
+    //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-    /**
-     * Private helper to retrieve the authenticated user's ID with method name for logging.
-     */
     private String getAuthenticatedUserId(String methodName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -183,4 +169,5 @@ public class CartController {
         log.info("[CartController][{}] Authenticated user ID: {}", methodName, user.getId());
         return user.getId();
     }
+
 }

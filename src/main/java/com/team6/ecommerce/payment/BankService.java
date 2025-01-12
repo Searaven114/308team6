@@ -5,7 +5,7 @@ import com.team6.ecommerce.payment.dto.PaymentRequest;
 import com.team6.ecommerce.payment.dto.PaymentResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
+/*
 @Log4j2
 @Service
 public class BankService {
@@ -38,4 +38,4 @@ public class BankService {
         return Math.random() > 0.2;
     }
 }
-
+*/

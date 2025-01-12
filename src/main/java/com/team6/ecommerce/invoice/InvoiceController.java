@@ -1,5 +1,6 @@
 package com.team6.ecommerce.invoice;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -8,20 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Secured({"ROLE_SALESMANAGER"})
+@AllArgsConstructor
 @RestController("/api")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
-    public InvoiceController(InvoiceService invoiceService) {
-        this.invoiceService = invoiceService;
-    }
 
-     @PostMapping("/invoices")
-     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-         Invoice newInvoice = invoiceService.createInvoice(invoice);
-         return ResponseEntity.ok(newInvoice);
-     }
 
     @GetMapping("/invoices/{id}")
     public ResponseEntity<Invoice> getInvoiceById(@PathVariable String id) {
@@ -39,9 +33,5 @@ public class InvoiceController {
      }
 
 
-     @DeleteMapping("/invoices/{id}")
-     public ResponseEntity<String> deleteInvoice(@PathVariable String id) {
-         invoiceService.deleteInvoice(id);
-         return ResponseEntity.ok("Invoice deleted successfully");
-     }
+
 }

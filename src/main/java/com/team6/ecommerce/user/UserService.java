@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -36,6 +37,7 @@ public class UserService{
     }
 
 
+    @Transactional
     public String registerUser(UserRegistrationDTO dto) throws UserRegistrationException {
 
         User check = userRepo.findByEmail( dto.getEmail() );
@@ -117,6 +119,7 @@ public class UserService{
 //
 //        throw new UserNotFoundException("User not found");
 //    }
+
 
 
     public ResponseEntity<?> addAddress(String userId, AddressDTO dto) {

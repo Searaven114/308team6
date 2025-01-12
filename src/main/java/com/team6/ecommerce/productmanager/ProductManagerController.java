@@ -31,17 +31,6 @@ public class ProductManagerController {
     private final ProductRepository productRepo;
     private final CommentService commentService;
 
-//    The product manager is also in the role of delivery department since it controls the stock.
-//    This means, the product manager shall view the invoices, products to be delivered, and the corresponding addresses for delivery.
-//      A delivery list has the following properties:
-//          delivery ID,
-//          customer ID,
-//          product ID,
-//          quantity,
-//          total price,
-//          delivery address,
-//          and a field showing whether the delivery has been completed or not.
-
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━KATEGORI KISMI━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,6 +78,7 @@ public class ProductService {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
+    @Transactional
     @Secured({"ROLE_SALESMANAGER", "ROLE_ADMIN"})
     public Product updateProductPrice(String id, double newPrice) {
 
@@ -101,7 +103,7 @@ public class ProductService {
     }
 
 
-
+    @Transactional
     @Secured({"ROLE_SALESMANAGER", "ROLE_ADMIN"})
     public Product applyDiscount(String id, double discountRate) {
 
@@ -128,32 +130,7 @@ public class ProductService {
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
 
-//    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
-//    public Product addProduct(ProductDTO productDTO) {
-//        if (productRepo.existsByTitle(productDTO.getTitle())) {
-//            throw new IllegalArgumentException("A product with this title already exists");
-//        }
-//
-//        if (productRepo.existsBySerialNumber(productDTO.getSerialNumber())) {
-//            throw new IllegalArgumentException("A product with this serial number already exists");
-//        }
-//
-//        Product product = new Product(
-//                productDTO.getTitle(),
-//                productDTO.getCategoryId(),
-//                productDTO.getBrand(),
-//                productDTO.getModel(),
-//                productDTO.getSerialNumber(),
-//                productDTO.getDescription(),
-//                productDTO.getQuantityInStock(),
-//                productDTO.getBasePrice(),
-//                productDTO.isWarrantyStatus(),
-//                productDTO.getDistributorId()
-//        );
-//
-//        return productRepo.save(product);
-//    }
-
+    @Transactional
     @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
     public Product addProduct(ProductDTO productDTO) {
         if (productRepo.existsByTitle(productDTO.getTitle())) {

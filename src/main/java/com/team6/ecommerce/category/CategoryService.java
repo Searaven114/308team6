@@ -37,6 +37,7 @@ public class CategoryService {
 
     }
 
+    @Transactional
     public Category save(Category category) {
         return categoryRepo.save(category);
 

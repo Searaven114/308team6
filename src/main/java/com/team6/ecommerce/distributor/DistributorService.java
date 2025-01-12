@@ -2,6 +2,7 @@ package com.team6.ecommerce.distributor;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,12 +22,9 @@ public class DistributorService {
         return distributorRepo.findById(id);
     }
 
+    @Transactional
     public Distributor save(Distributor distributor) {
         return distributorRepo.save(distributor);
-    }
-
-    public void deleteById(String id) {
-        distributorRepo.deleteById(id);
     }
 
 }

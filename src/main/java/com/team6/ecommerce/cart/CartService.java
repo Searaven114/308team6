@@ -1,9 +1,11 @@
 package com.team6.ecommerce.cart;
 
+import com.team6.ecommerce.address.Address;
 import com.team6.ecommerce.cart.dto.CheckoutResponseDTO;
 import com.team6.ecommerce.cartitem.CartItem;
 import com.team6.ecommerce.cartitem.CartItem2;
 import com.team6.ecommerce.constants.Strings;
+import com.team6.ecommerce.delivery.DeliveryListService;
 import com.team6.ecommerce.exception.UserNotFoundException;
 import com.team6.ecommerce.invoice.Invoice;
 import com.team6.ecommerce.invoice.InvoiceRepository;
@@ -11,6 +13,7 @@ import com.team6.ecommerce.invoice.InvoiceService;
 import com.team6.ecommerce.notification.NotificationService;
 import com.team6.ecommerce.order.Order;
 import com.team6.ecommerce.order.OrderRepository;
+import com.team6.ecommerce.order.OrderService;
 import com.team6.ecommerce.order.OrderStatus;
 import com.team6.ecommerce.payment.PaymentService;
 import com.team6.ecommerce.payment.dto.PaymentRequest;
@@ -25,6 +28,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -33,16 +37,16 @@ import java.util.*;
 @Service
 public class CartService {
 
-    private final UserService userService;
     private final UserRepository userRepo;
     private final ProductRepository productRepo;
-    private final HttpSession session;
     private final CartRepository cartRepo;
-    private final OrderRepository orderRepo;
-    private final InvoiceRepository invoiceRepo;
     private final PaymentService paymentService;
     private final NotificationService notificationService;
     private final InvoiceService invoiceService;
+    private final DeliveryListService deliveryListService;
+    private final OrderService orderService;
+
+
 
     private void recalculateTotalPrice(Cart cart) {
         double totalPrice = cart.getCartItems().stream()
@@ -83,7 +87,7 @@ public class CartService {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @Transactional
     public String clearUserCart(String userId) {
 
         Optional<User> user = userRepo.findById(userId);
@@ -117,6 +121,7 @@ public class CartService {
 
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
+    @Transactional
     public String addItemToUserCart(String userId, String productId, int quantity) {
 
         // Validate the presence of user
@@ -187,7 +192,7 @@ public class CartService {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @Transactional
     public String updateCartItemQuantity(String userId, String productId, int quantity) {
 
         //Validate the presence of user
@@ -237,7 +242,7 @@ public class CartService {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @Transactional
     public String removeItemFromUserCart(String userId, String productId) {
 
         //Validate the presence of user
@@ -283,39 +288,43 @@ public class CartService {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    @Transactional
     public CheckoutResponseDTO checkout(String userId, PaymentRequestDTO paymentRequest) {
-        log.info("[CartService][Checkout] Starting checkout for user ID: {}", userId);
+
+         log.info("[CartService][Checkout] Starting checkout for user ID: {}", userId);
 
         // Fetch user's cart
         Optional<Cart> cartOpt = cartRepo.findByUserId(userId);
         if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
-            log.warn("[CartService][Checkout] Cart is empty for user ID: {}", userId);
-            return null; // Handle properly in controller
+             log.warn("[CartService][Checkout] Cart is empty for user ID: {}", userId);
+            return null; // means its empty
         }
 
         Cart cart = cartOpt.get();
 
-        // Deduct product stock
+        // For each item in cart:
         for (CartItem item : cart.getCartItems()) {
+
+            // Retrieve the product
             Product product = productRepo.findById(item.getProduct().getId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProduct().getId()));
 
+            // Availability check
             if (product.getQuantityInStock() < item.getQuantity()) {
-                log.error("[CartService][Checkout] Not enough stock for product: {}", product.getTitle());
+                 log.error("[CartService][Checkout] Not enough stock for product: {}", product.getTitle());
                 throw new RuntimeException("Not enough stock for product: " + product.getTitle());
             }
 
+            // Deduction from stock
             product.setQuantityInStock(product.getQuantityInStock() - item.getQuantity());
 
+            // Saving the now updated product back to database
             productRepo.save(product);
 
-            log.info("[CartService][Checkout] Product '{}' stock reduced by {} units. Remaining stock: {}. User ID: {}",
-                    product.getTitle(), item.getQuantity(), product.getQuantityInStock(), userId);
-
+             log.info("[CartService][Checkout] Product '{}' stock reduced by {} units. Remaining stock: {}. User ID: {}", product.getTitle(), item.getQuantity(), product.getQuantityInStock(), userId);
         }
 
-        // Convert CartItem to CartItem2
+        // Convert CartItem to CartItem2 to get rid of unnecessary details
         List<CartItem2> cartItem2List = cart.getCartItems().stream()
                 .map(item -> CartItem2.builder()
                         .productName(item.getProduct().getTitle())
@@ -324,36 +333,25 @@ public class CartService {
                         .build())
                 .toList();
 
-        // Create Order
-        Order order = Order.builder()
-                .userId(userId)
-                .cart(cart)
-                .orderStatus(OrderStatus.PROCESSING)
-                .createdAt(new Date())
-                .total(cart.getTotalPrice().longValue())
-                .address(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getAddresses().get(0))
-                .build();
+        //TODO address seçimi modülerize edilmeli, şu haliyle kullanıcının eldeki ilk addressini alıyor.
+        Address selectedAddress = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getAddresses().get(0);
 
-        orderRepo.save(order); // Save order to DB
+        for (CartItem2 cartItem2 : cartItem2List) {
+            deliveryListService.createDeliveryEntry(userId,cartItem2,selectedAddress);
+            log.info("[CartService][Checkout] Delivery entry for user ID: {}", userId);
+        }
 
-        log.info("[CartService][Checkout] Order created with ID: {}", order.getId());
+        // Delegating order creation to order service
+        Order savedOrder = orderService.createOrder(userId, cart, selectedAddress);
 
-        // Create and save invoice
-        Invoice invoice = Invoice.builder()
-                .userId(userId)
-                .orderId(cart.getId())
-                .totalAmount(cart.getTotalPrice())
-                .invoiceDate(new Date())
-                .email(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getEmail())
-                .purchasedItems(cartItem2List)
-                .build();
+         log.info("[CartService][Checkout] Order created for user ID: {})", userId);
 
-        invoiceRepo.save(invoice);
+        // Delegating invoice creation to invoice service
+        Invoice savedInvoice = invoiceService.generateInvoice(savedOrder.getId(), userId, cart.getTotalPrice(), cartItem2List);
 
-        log.info("[CartService][Checkout] Invoice created for user ID: {} with invoice ID: {}", userId, invoice.getId());
+         log.info("[CartService][Checkout] Invoice created for user ID: {} with invoice ID: {}", userId, savedInvoice.getId());
 
-        // Send invoice notification
-        //TODO BUNU UNCOMMENTLE DAHA SONRA. HER CHECKOUTTA MAIL GITMESIN / INVALID ADRESSE MAIL GONDERMEYE CALISIP 500 VERMESIN DIYE COMMENTLEDIM
+        // Delegating user notification to notification service, if this line is uncommented a mail will be sent to the user regarding the purchase
         //notificationService.notifyUserWithInvoice(invoice);
 
         // Prepare CheckoutResponseDTO
@@ -361,8 +359,8 @@ public class CartService {
 
         // Prepare CheckoutResponseDTO
         CheckoutResponseDTO response = CheckoutResponseDTO.builder()
-                .invoice(invoice)
-                .totalAmount(invoice.getTotalAmount())
+                .invoice(savedInvoice)
+                .totalAmount(savedInvoice.getTotalAmount())
                 .purchasedItems(purchasedItems)
                 .build();
 
@@ -371,9 +369,9 @@ public class CartService {
         cart.setTotalPrice(0.0);
         cartRepo.save(cart);
 
-        log.info("[CartService][Checkout] Cart cleared for user ID: {}", userId);
-        log.info("[CartService][Checkout] Checkout completed for user ID: {}", userId);
-        log.info("[CartService][Checkout] Order ID: {} has been delegated to Delivery Department.", order.getId());
+         log.info("[CartService][Checkout] Checkout completed for user ID: {}", userId);
+         log.info("[CartService][Checkout] Cart cleared for user ID: {}", userId);
+
         return response;
     }
 
@@ -381,7 +379,7 @@ public class CartService {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
-
+    //AuthenticationSuccessEventde kullanılıyor, her loginde kullanıcının cartı check ediliyor
     public String validateCartItems(String userId) {
         // Validate userId
         if (userId == null || userId.isEmpty()) {

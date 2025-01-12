@@ -6,6 +6,7 @@ import com.team6.ecommerce.user.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,9 +36,8 @@ public class WishlistService {
                 });
     }
 
-    /**
-     * Add a product to the user's wishlist.
-     */
+
+    @Transactional
     public void addItemToWishlist(String userId, String productId) {
         validateUser(userId);
 
@@ -48,9 +48,8 @@ public class WishlistService {
         log.info("[WishlistService][addItemToWishlist] Product ID: {} added to wishlist for user ID: {}", productId, userId);
     }
 
-    /**
-     * Remove a product from the user's wishlist.
-     */
+
+    @Transactional
     public void removeItemFromWishlist(String userId, String productId) {
         validateUser(userId);
 

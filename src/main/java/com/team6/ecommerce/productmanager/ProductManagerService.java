@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class ProductManagerService {
 
     }
 
+    @Transactional
     @Secured({"ROLE_PRODUCTMANAGER"})
     public void removeCategory(String categoryId){
         if (categoryRepo.existsById(categoryId)){
@@ -96,6 +98,7 @@ public class ProductManagerService {
 
     }
 
+    @Transactional
     @Secured({"ROLE_PRODUCTMANAGER"})
     public Product updateProductStock(String productId, int quantity) {
 

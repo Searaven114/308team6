@@ -5,6 +5,7 @@ import com.team6.ecommerce.user.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,9 +19,8 @@ public class CommentService {
     private final OrderService orderService;
     private final UserRepository userRepo;
 
-    /**
-     * Add a new comment for a product by a user.
-     */
+
+    @Transactional
     public String addComment(String userId, String productId, String content) {
         validatePurchase(userId, productId);
 
@@ -36,9 +36,8 @@ public class CommentService {
         return "Comment submitted for approval.";
     }
 
-    /**
-     * Approve a comment by ID.
-     */
+
+    @Transactional
     public void approveComment(String commentId) {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));

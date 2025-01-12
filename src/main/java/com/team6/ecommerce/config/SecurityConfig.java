@@ -60,6 +60,17 @@ public class SecurityConfig {
                             response.getWriter().write("{\"status\":\"failure\",\"message\":\"Invalid username or password.\"}");
                         })
                 )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout") // Optional: Redirect user to login page after logout
+                        .deleteCookies("JSESSIONID") // Deletes the session cookie
+                        .invalidateHttpSession(true) // Invalidates the HTTP session
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\":\"Logout successful!\"}");
+                        })
+                )
                 .httpBasic(withDefaults())
                 .build();
     }

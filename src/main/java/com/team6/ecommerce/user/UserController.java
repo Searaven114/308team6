@@ -46,7 +46,18 @@ public class UserController {
     }
 
 
-
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/user/logout")
+    public ResponseEntity<?> logoutUser() {
+        try {
+            SecurityContextHolder.clearContext(); // Clear the current security context
+            log.info("[UserController][logoutUser] User successfully logged out.");
+            return ResponseEntity.ok("User successfully logged out.");
+        } catch (Exception e) {
+            log.error("[UserController][logoutUser] Error during logout: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Logout failed.");
+        }
+    }
 
 
     @PreAuthorize("isAuthenticated()")

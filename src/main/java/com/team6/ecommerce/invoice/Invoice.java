@@ -1,7 +1,5 @@
 package com.team6.ecommerce.invoice;
 
-
-
 import com.team6.ecommerce.cartitem.CartItem2;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +25,5 @@ public class Invoice {
     private Double totalAmount;
     private Date invoiceDate;
     private String email;
-
-    // New field to track purchased items (productId -> quantity)
     private List<CartItem2> purchasedItems;
 }

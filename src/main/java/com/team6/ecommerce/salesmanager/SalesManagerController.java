@@ -70,6 +70,7 @@ public class SalesManagerController {
     }
 
 
+    //TODO -> YYYY-MM-DD OLARAK KULLAN, 2001-01-01 mesela , Eğer alım olmamış ise boş array döndürür, fake data yok DBde
     @Secured({"ROLE_SALESMANAGER", "ROLE_ADMIN"})
     @GetMapping("/invoices")
     public ResponseEntity<?> viewInvoices(

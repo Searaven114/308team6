@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.team6.ecommerce.cartitem.CartItem2;
+import com.team6.ecommerce.user.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -21,66 +22,57 @@ import java.util.stream.Collectors;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepo;
+    private final UserRepository userRepo;
 
-    /**
-     * Create and save a new invoice.
-     *
-     * @param invoice Invoice object to save
-     * @return Saved Invoice object
-     */
-    public Invoice createInvoice(Invoice invoice) {
-        log.info("[InvoiceService][createInvoice] Creating invoice for order ID: {}", invoice.getOrderId());
-        return invoiceRepo.save(invoice);
+
+    /*public class Invoice {
+    @Id
+    private String id;
+    private String orderId;
+    private String userId;
+    private Double totalAmount;
+    private Date invoiceDate;
+    private String email;
+    private List<CartItem2> purchasedItems;
+}*/
+
+    public Invoice generateInvoice(String orderId, String userId, Double totalAmount, List<CartItem2> items) {
+
+        String email = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getEmail();
+
+        Invoice invoice = Invoice.builder()
+                .orderId(orderId)
+                .userId(userId)
+                .totalAmount(totalAmount)
+                .invoiceDate(new Date())
+                .email(email)
+                .purchasedItems(items)
+                .build();
+
+        invoiceRepo.save(invoice);
+
+        return invoice;
     }
 
-    /**
-     * Retrieve an invoice by its ID.
-     *
-     * @param invoiceId ID of the invoice to fetch
-     * @return Optional containing the Invoice if found, empty otherwise
-     */
     public Optional<Invoice> getInvoiceById(String invoiceId) {
         log.info("[InvoiceService][getInvoiceById] Fetching invoice with ID: {}", invoiceId);
         return invoiceRepo.findById(invoiceId);
     }
 
-    /**
-     * Retrieve all invoices.
-     *
-     * @return List of all invoices
-     */
+
     public List<Invoice> getAllInvoices() {
         log.info("[InvoiceService][getAllInvoices] Fetching all invoices");
         return invoiceRepo.findAll();
     }
 
 
-    /**
-     * Delete an invoice by its ID.
-     *
-     * @param invoiceId ID of the invoice to delete
-     * @return True if deleted, false otherwise
-     */
-    public boolean deleteInvoice(String invoiceId) {
-        log.info("[InvoiceService][deleteInvoice] Deleting invoice with ID: {}", invoiceId);
-        if (invoiceRepo.existsById(invoiceId)) {
-            invoiceRepo.deleteById(invoiceId);
-            return true;
-        }
-        return false;
-    }
 
 
-    /**
-     * Retrieve all invoices for a specific user by their user ID.
-     *
-     * @param userId ID of the user
-     * @return List of invoices belonging to the user
-     */
     public List<Invoice> getInvoicesByUserId(String userId) {
         log.info("[InvoiceService][getInvoicesByUserId] Fetching invoices for user ID: {}", userId);
         return invoiceRepo.findByUserId(userId);
     }
+
 
     public List<Invoice> getInvoicesByDateRange(Date startDate, Date endDate) {
         log.info("[InvoiceService][getInvoicesByDateRange] Fetching invoices between {} and {}", startDate, endDate);

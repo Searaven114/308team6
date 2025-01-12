@@ -2,6 +2,11 @@ package com.team6.ecommerce.order;
 
 
 
+import com.team6.ecommerce.address.Address;
+import com.team6.ecommerce.cart.Cart;
+import com.team6.ecommerce.cartitem.CartItem;
+import com.team6.ecommerce.user.User;
+import com.team6.ecommerce.user.UserRepository;
 import com.team6.ecommerce.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -10,8 +15,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +30,7 @@ public class OrderService {
 
     private final OrderRepository orderRepo;
     private final UserService userService;
+    private final UserRepository userRepo;
 
 
     @Secured({"ROLE_ADMIN"})
@@ -109,52 +117,78 @@ public class OrderService {
 
 
 
-    @Scheduled(fixedRate = 15000)
-    public void simulateOrderStatus() {
-        log.info("[OrderService][simulateOrderStatus] Starting order status simulation...");
+//    @Scheduled(fixedRate = 30000)
+//    public void simulateOrderStatus() {
+//        log.info("[OrderService][simulateOrderStatus] Starting order status simulation...");
+//
+//        // Fetch all orders with status 'PROCESSING'
+//        List<Order> processingOrders = orderRepo.findAllByOrderStatus(OrderStatus.PROCESSING);
+//
+//        for (Order order : processingOrders) {
+//            log.info("[OrderService][simulateOrderStatus] Updating order ID: {} from PROCESSING to IN_TRANSIT", order.getId());
+//
+//            // Update the status
+//            order.setOrderStatus(OrderStatus.IN_TRANSIT);
+//
+//            // Save the updated order
+//            orderRepo.save(order);
+//
+//            log.info("[OrderService][simulateOrderStatus] Order ID: {} successfully updated to IN_TRANSIT", order.getId());
+//        }
+//
+//        log.info("[OrderService][simulateOrderStatus] Simulation completed.");
+//    }
 
-        // Fetch all orders with status 'PROCESSING'
-        List<Order> processingOrders = orderRepo.findAllByOrderStatus(OrderStatus.PROCESSING);
 
-        for (Order order : processingOrders) {
-            log.info("[OrderService][simulateOrderStatus] Updating order ID: {} from PROCESSING to IN_TRANSIT", order.getId());
 
-            // Update the status
-            order.setOrderStatus(OrderStatus.IN_TRANSIT);
 
-            // Save the updated order
-            orderRepo.save(order);
 
-            log.info("[OrderService][simulateOrderStatus] Order ID: {} successfully updated to IN_TRANSIT", order.getId());
+//    @Scheduled(fixedRate = 40000)
+//    public void simulateDeliveryStatus() {
+//        log.info("[OrderService][simulateDeliveryStatus] Starting delivery status simulation...");
+//
+//        // Fetch all orders with status 'IN_TRANSIT'
+//        List<Order> inTransitOrders = orderRepo.findAllByOrderStatus(OrderStatus.IN_TRANSIT);
+//
+//        for (Order order : inTransitOrders) {
+//            log.info("[OrderService][simulateDeliveryStatus] Updating order ID: {} from IN_TRANSIT to DELIVERED", order.getId());
+//
+//            // Update the status
+//            order.setOrderStatus(OrderStatus.DELIVERED);
+//
+//            // Save the updated order
+//            orderRepo.save(order);
+//
+//            log.info("[OrderService][simulateDeliveryStatus] Order ID: {} successfully updated to DELIVERED", order.getId());
+//        }
+//
+//        log.info("[OrderService][simulateDeliveryStatus] Delivery simulation completed.");
+//    }
+
+    @Transactional
+    public Order createOrder(String userId, Cart cart, Address deliveryAddress) {
+        log.info("[OrderService][createOrder] Creating order for user ID: {}", userId);
+
+        if (cart == null || cart.getCartItems().isEmpty()) {
+            log.error("[OrderService][createOrder] Cart cannot be null or empty.");
+            throw new IllegalArgumentException("Cart cannot be null or empty.");
         }
 
-        log.info("[OrderService][simulateOrderStatus] Simulation completed.");
-    }
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
 
+        Order order = Order.builder()
+                .userId(userId)
+                .cart(cart)
+                .orderStatus(OrderStatus.PROCESSING)
+                .createdAt(new Date())
+                .total(cart.getTotalPrice().longValue())
+                .address(deliveryAddress) // Assuming the first address is used
+                .build();
 
-
-
-
-    @Scheduled(fixedRate = 23000)
-    public void simulateDeliveryStatus() {
-        log.info("[OrderService][simulateDeliveryStatus] Starting delivery status simulation...");
-
-        // Fetch all orders with status 'IN_TRANSIT'
-        List<Order> inTransitOrders = orderRepo.findAllByOrderStatus(OrderStatus.IN_TRANSIT);
-
-        for (Order order : inTransitOrders) {
-            log.info("[OrderService][simulateDeliveryStatus] Updating order ID: {} from IN_TRANSIT to DELIVERED", order.getId());
-
-            // Update the status
-            order.setOrderStatus(OrderStatus.DELIVERED);
-
-            // Save the updated order
-            orderRepo.save(order);
-
-            log.info("[OrderService][simulateDeliveryStatus] Order ID: {} successfully updated to DELIVERED", order.getId());
-        }
-
-        log.info("[OrderService][simulateDeliveryStatus] Delivery simulation completed.");
+        orderRepo.save(order);
+        log.info("[OrderService][createOrder] Order created with ID: {}", order.getId());
+        return order;
     }
 }
 
