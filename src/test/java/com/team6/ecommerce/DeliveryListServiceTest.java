@@ -102,6 +102,22 @@ class DeliveryListServiceTest {
         assertTrue(result.isEmpty());
         verify(deliveryRepo, times(1)).findByIsCompleted(false);
     }
+    @Test
+    void testCreateDeliveryEntry_NullInputs() {
+        String customerId = "customer123";
+    
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            deliveryService.createDeliveryEntry(customerId, null, null);
+        });
+    
+        assertNotNull(exception);
+    }
+    @Test
+    void testUpdateDeliveryStatus_UnauthorizedAccess() throws Exception {
+        mockMvc.perform(patch("/api/pm/deliveries/delivery123/status")
+                        .param("isCompleted", "true"))
+                .andExpect(status().isUnauthorized());
+    }
     
     @Test
     void testUpdateDeliveryStatus_NotFound() {
