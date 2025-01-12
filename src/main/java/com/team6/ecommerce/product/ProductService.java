@@ -165,6 +165,21 @@ public class ProductService {
 
 
 
+    @Transactional
+    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
+    public void removeProduct(String productId) {
+        Optional<Product> productOptional = productRepo.findById(productId);
+
+        if (productOptional.isEmpty()) {
+            throw new ProductNotFoundException("Product with ID " + productId + " not found.");
+        }
+
+        Product product = productOptional.get();
+
+        // Additional logic if needed, like logging, cleaning up associated data, etc.
+        productRepo.delete(product);
+        log.info("[ProductService][removeProduct] Product with ID: {} removed successfully.", productId);
+    }
 
 
 

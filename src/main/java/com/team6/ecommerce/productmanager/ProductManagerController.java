@@ -5,6 +5,7 @@ import com.team6.ecommerce.category.Category;
 import com.team6.ecommerce.category.CategoryService;
 import com.team6.ecommerce.comment.Comment;
 import com.team6.ecommerce.comment.CommentService;
+import com.team6.ecommerce.exception.ProductNotFoundException;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.product.ProductService;
@@ -113,6 +114,25 @@ public class ProductManagerController {
                     .body("An error occurred while updating stock.");
         }
     }
+
+
+
+    @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity<?> removeProduct(@PathVariable String id) {
+        try {
+            productService.removeProduct(id);
+            log.info("[ProductManagerController][removeProduct] Product with ID: {} removed successfully.", id);
+            return ResponseEntity.ok("Product removed successfully.");
+        } catch (ProductNotFoundException e) {
+            log.error("[ProductManagerController][removeProduct] Product not found with ID: {}. {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("[ProductManagerController][removeProduct] Error removing product with ID: {}. {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while removing the product.");
+        }
+    }
+
 
 
 
