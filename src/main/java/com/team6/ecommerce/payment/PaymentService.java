@@ -8,16 +8,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentService {
 
+
+    // Mock validation logic
     public PaymentResponse processPayment(PaymentRequest paymentRequest) {
-        // Mock validation logic
+
         if (isValidCard(paymentRequest.getCardNumber())) {
-            return new PaymentResponse(true, "Payment successful");
+            return new PaymentResponse(true, Strings.PAYMENT_SUCCESSFUL);
         }
         return new PaymentResponse(false, Strings.PAYMENT_FAILED_INVALID_CARD_DETAILS);
     }
 
     private boolean isValidCard(String cardNumber) {
-        // Simple mock validation (e.g., 16-digit check)
+        //Simple mock validation
         return cardNumber != null && cardNumber.length() == 16;
     }
 

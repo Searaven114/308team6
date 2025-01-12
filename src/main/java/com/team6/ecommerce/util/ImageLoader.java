@@ -52,6 +52,7 @@ public class ImageLoader {
             images.put("28", Files.readAllBytes(Path.of(IMAGE_DIRECTORY + "28_AOC Agon AG273QCG.jpg")));
             images.put("29", Files.readAllBytes(Path.of(IMAGE_DIRECTORY + "29_Razer Naga Pro.jpg")));
             images.put("30", Files.readAllBytes(Path.of(IMAGE_DIRECTORY + "30_Asus VivoBook S14 Comment comment.jpg")));
+            images.put("666666",Files.readAllBytes(Path.of(IMAGE_DIRECTORY + "new_product.jpg")));
         } catch (IOException e) {
             log.error("Error loading images: ", e);
         }

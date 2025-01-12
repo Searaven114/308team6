@@ -6,10 +6,10 @@ import lombok.Data;
 @Data
 @Builder
 public class PaymentRequest {
+
     private String cardNumber;
     private String cardExpiry;
     private String cvv;
     private Long totalAmount;
-
 
 }

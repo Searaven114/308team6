@@ -3,6 +3,7 @@ package com.team6.ecommerce.product;
 import com.team6.ecommerce.exception.ProductNotFoundException;
 import com.team6.ecommerce.notification.NotificationService;
 import com.team6.ecommerce.product.dto.ProductDTO;
+import com.team6.ecommerce.util.ImageLoader;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -27,6 +29,8 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepo.findAll();
     }
+
+
 
     // Fetch paginated products without sorting
     public Page<Product> getPaginatedProducts(int page, int size) {
@@ -129,6 +133,7 @@ public class ProductService {
 
     //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 
+    private final Map<String, byte[]> images = ImageLoader.loadProductImages();
 
     @Transactional
     @Secured({"ROLE_ADMIN", "ROLE_PRODUCTMANAGER"})
@@ -152,7 +157,7 @@ public class ProductService {
                 productDTO.getBasePrice(),
                 productDTO.isWarrantyStatus(),
                 productDTO.getDistributorId(),
-                productDTO.getImage() // Assuming image is part of ProductDTO
+                images.get("666666")
         );
 
         return productRepo.save(product);
