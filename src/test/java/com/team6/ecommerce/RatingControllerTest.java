@@ -40,5 +40,17 @@ class RatingControllerTest {
         assertEquals("Rating added successfully.", response.getBody());
     }
     */
+    @Test
+    void testGetAverageRating() {
+        String productId = "product123";
+
+        when(ratingService.calculateAverageRating(productId)).thenReturn(4.5);
+
+        ResponseEntity<Double> response = ratingController.getAverageRating(productId);
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(4.5, response.getBody());
+    }
 }
 
