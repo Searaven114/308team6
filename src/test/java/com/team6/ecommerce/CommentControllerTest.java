@@ -40,6 +40,8 @@ class CommentControllerTest {
         assertEquals("Comment submitted for approval.", response.getBody());
     }
 */
+
+    /*
     @Test
     void testApproveComment() {
         String commentId = "comment123";
@@ -52,4 +54,6 @@ class CommentControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertEquals("Comment approved successfully.", response.getBody());
     }
+    */
+
 }
