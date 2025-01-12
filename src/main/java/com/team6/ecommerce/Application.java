@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @EnableScheduling
 @Log4j2
 @SpringBootApplication
-public class Application implements CommandLineRunner {
+public class    Application implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
