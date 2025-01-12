@@ -118,6 +118,15 @@ class DeliveryListServiceTest {
                         .param("isCompleted", "true"))
                 .andExpect(status().isUnauthorized());
     }
+    @Test
+    @WithMockUser(username = "productManager", roles = {"PRODUCTMANAGER"})
+    void testUpdateDeliveryStatus_InvalidDeliveryId() throws Exception {
+        String invalidDeliveryId = "invalidId";
+    
+        mockMvc.perform(patch("/api/pm/deliveries/" + invalidDeliveryId + "/status")
+                        .param("isCompleted", "true"))
+                .andExpect(status().isNotFound());
+    }
     
     @Test
     void testUpdateDeliveryStatus_NotFound() {
