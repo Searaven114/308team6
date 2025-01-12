@@ -24,6 +24,23 @@ class RatingControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
+    @Test
+    void testAddRating_Success() {
+        String productId = "product123";
+        int ratingValue = 5;
+
+        // Mock ratingService behavior
+        when(ratingService.addRating(anyString(), eq(productId), eq(ratingValue)))
+                .thenReturn("Rating added successfully.");
+
+        // Call the controller method
+        ResponseEntity<String> response = ratingController.addRating(productId, ratingValue);
+
+        // Assert the response
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Rating added successfully.", response.getBody());
+    }
     /*
     @Test
     void testAddRating() {
@@ -41,6 +58,24 @@ class RatingControllerTest {
     }
     */
     @Test
+    void testAddRating_Failure_UserNotPurchased() {
+        String productId = "product123";
+        int ratingValue = 3;
+
+        // Mock ratingService behavior to throw an exception
+        when(ratingService.addRating(anyString(), eq(productId), eq(ratingValue)))
+                .thenThrow(new RuntimeException("User has not purchased this product."));
+
+        // Call the controller method and capture the exception
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            ratingController.addRating(productId, ratingValue);
+        });
+
+        // Assert the exception message
+        assertEquals("User has not purchased this product.", exception.getMessage());
+    }
+
+    @Test
     void testGetAverageRating() {
         String productId = "product123";
 
@@ -52,5 +87,6 @@ class RatingControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(4.5, response.getBody());
     }
+    
 }
 
