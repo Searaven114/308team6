@@ -79,4 +79,19 @@ class RatingServiceTest {
 
         assertEquals(0.0, averageRating);
     }
+
+     @Test
+    void testCalculateAverageRating_WithRatings() {
+        String productId = "product123";
+
+        // Mock ratings for the product
+        when(ratingRepo.findByProductId(productId)).thenReturn(List.of(
+                new Rating("1", productId, "user1", 4),
+                new Rating("2", productId, "user2", 5)
+        ));
+
+        double averageRating = ratingService.calculateAverageRating(productId);
+
+        assertEquals(4.5, averageRating);
+    }
 }
