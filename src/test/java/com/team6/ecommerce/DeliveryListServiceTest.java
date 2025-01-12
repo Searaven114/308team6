@@ -138,6 +138,15 @@ class DeliveryListServiceTest {
         assertEquals("customer123", delivery.getCustomerId());
         assertTrue(delivery.isCompleted());
     }
+    @Test
+    @WithMockUser(username = "productManager", roles = {"PRODUCTMANAGER"})
+    void testUpdateDeliveryStatus_InvalidIsCompletedValue() throws Exception {
+        String deliveryId = "delivery123";
+    
+        // Attempt to send a request without the required `isCompleted` parameter
+        mockMvc.perform(patch("/api/pm/deliveries/" + deliveryId + "/status"))
+                .andExpect(status().isBadRequest());
+    }
     
     @Test
     void testUpdateDeliveryStatus_NotFound() {
