@@ -18,7 +18,7 @@ public class GetAllProductsTest {
     public void testGetAllProducts_WhenProductsExist() {
         // Arrange
         ProductRepository productRepository = mock(ProductRepository.class);
-        ProductService productService = new ProductService(productRepository);
+        ProductService productService = new ProductService(productRepository, null);
 
         Product product1 = new Product();
         product1.setId("1");
@@ -47,7 +47,7 @@ public class GetAllProductsTest {
     public void testGetAllProducts_WhenNoProductsExist() {
         // Arrange
         ProductRepository productRepository = mock(ProductRepository.class);
-        ProductService productService = new ProductService(productRepository);
+        ProductService productService = new ProductService(productRepository, null);
 
         when(productRepository.findAll()).thenReturn(Collections.emptyList());
 

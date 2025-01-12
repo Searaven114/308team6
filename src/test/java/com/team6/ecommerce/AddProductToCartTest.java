@@ -5,6 +5,8 @@ import com.team6.ecommerce.cartitem.CartItem;
 import com.team6.ecommerce.cart.CartRepository;
 import com.team6.ecommerce.cart.CartService;
 import com.team6.ecommerce.constants.Strings;
+import com.team6.ecommerce.delivery.DeliveryListService;
+import com.team6.ecommerce.order.OrderService;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.user.UserRepository;
@@ -44,6 +46,9 @@ public class AddProductToCartTest {
         PaymentService paymentService = mock(PaymentService.class);
         NotificationService notificationService = mock(NotificationService.class);
         InvoiceService invoiceService = mock(InvoiceService.class);
+        DeliveryListService deliveryListService = mock(DeliveryListService.class);
+        OrderService orderService = mock(OrderService.class);
+
 
         // Mock Product
         Product mockProduct = new Product();
@@ -63,16 +68,20 @@ public class AddProductToCartTest {
 
         // Create CartService instance
         CartService cartService = new CartService(
-                userService,
+                //userService,
                 userRepository,
                 productRepository,
-                session,
+                //session,
                 cartRepository,
-                orderRepository,
-                invoiceRepository,
                 paymentService,
                 notificationService,
-                invoiceService
+                invoiceService,
+                deliveryListService,
+                orderService
+
+
+
+
         );
 
         // Act

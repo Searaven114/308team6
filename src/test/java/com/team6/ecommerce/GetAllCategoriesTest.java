@@ -28,7 +28,7 @@ public class GetAllCategoriesTest {
 
         when(categoryRepository.findAll()).thenReturn(Arrays.asList(category1, category2));
 
-        CategoryService categoryService = new CategoryService(categoryRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository, null);
 
         // Act
         List<Category> categories = categoryService.findAll();

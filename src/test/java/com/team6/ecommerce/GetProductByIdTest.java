@@ -18,7 +18,7 @@ public class GetProductByIdTest {
         String productId = "1";
 
         ProductRepository productRepository = mock(ProductRepository.class);
-        ProductService productService = new ProductService(productRepository);
+        ProductService productService = new ProductService(productRepository, null);
 
         Product mockProduct = new Product();
         mockProduct.setId(productId);
@@ -44,7 +44,7 @@ public class GetProductByIdTest {
         String productId = "999";
 
         ProductRepository productRepository = mock(ProductRepository.class);
-        ProductService productService = new ProductService(productRepository);
+        ProductService productService = new ProductService(productRepository, null);
 
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 

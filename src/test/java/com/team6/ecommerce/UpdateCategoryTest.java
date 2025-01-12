@@ -30,7 +30,7 @@ public class UpdateCategoryTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
         when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
 
-        CategoryService categoryService = new CategoryService(categoryRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository, null);
 
         // Act
         Category result = categoryService.save(updatedCategory);

@@ -4,7 +4,18 @@ import com.team6.ecommerce.cart.Cart;
 import com.team6.ecommerce.cart.CartRepository;
 import com.team6.ecommerce.cart.CartService;
 import com.team6.ecommerce.cartitem.CartItem;
+import com.team6.ecommerce.delivery.DeliveryListService;
+import com.team6.ecommerce.invoice.InvoiceRepository;
+import com.team6.ecommerce.invoice.InvoiceService;
+import com.team6.ecommerce.notification.NotificationService;
+import com.team6.ecommerce.order.OrderRepository;
+import com.team6.ecommerce.order.OrderService;
+import com.team6.ecommerce.payment.PaymentService;
 import com.team6.ecommerce.product.Product;
+import com.team6.ecommerce.product.ProductRepository;
+import com.team6.ecommerce.user.UserRepository;
+import com.team6.ecommerce.user.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -21,6 +32,20 @@ public class FetchUserCartTest {
         // Arrange
         String userId = "test-user-id";
         CartRepository cartRepository = mock(CartRepository.class);
+        //CartRepository cartRepository = mock(CartRepository.class);
+        UserRepository userRepository = mock(UserRepository.class); // Mock UserRepository
+        //CartRepository cartRepository = mock(CartRepository.class);
+        ProductRepository productRepository = mock(ProductRepository.class);
+        UserService userService = mock(UserService.class);
+        //UserRepository userRepository = mock(UserRepository.class);
+        HttpSession session = mock(HttpSession.class);
+        OrderRepository orderRepository = mock(OrderRepository.class);
+        InvoiceRepository invoiceRepository = mock(InvoiceRepository.class);
+        PaymentService paymentService = mock(PaymentService.class);
+        NotificationService notificationService = mock(NotificationService.class);
+        InvoiceService invoiceService = mock(InvoiceService.class);
+        DeliveryListService deliveryListService = mock(DeliveryListService.class);
+        OrderService orderService = mock(OrderService.class);
 
         CartItem mockCartItem = new CartItem();
         Product mockProduct = new Product();
@@ -38,16 +63,20 @@ public class FetchUserCartTest {
 
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(mockCart));
         CartService cartService = new CartService(
-                null, // UserService
-                null, // UserRepository
-                null, // ProductRepository
-                null, // HttpSession
+                //userService,
+                userRepository,
+                productRepository,
+                //session,
                 cartRepository,
-                null, // OrderRepository
-                null, // InvoiceRepository
-                null, // PaymentService
-                null, // NotificationService
-                null  // InvoiceService
+                paymentService,
+                notificationService,
+                invoiceService,
+                deliveryListService,
+                orderService
+
+
+
+
         );
 
         // Act

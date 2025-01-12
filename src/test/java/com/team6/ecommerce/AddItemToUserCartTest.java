@@ -42,9 +42,9 @@ public class AddItemToUserCartTest {
 
         CartService cartService = new CartService(
                 null, // UserService
-                null, // UserRepository
+                //null, // UserRepository
                 productRepository,
-                null, // HttpSession
+                //null, // HttpSession
                 cartRepository,
                 null, // OrderRepository
                 null, // InvoiceRepository

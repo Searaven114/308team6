@@ -26,6 +26,13 @@ public class DistributorService {
     public Distributor save(Distributor distributor) {
         return distributorRepo.save(distributor);
     }
+    @Transactional
+    public void deleteById(String id) {
+        if (!distributorRepo.existsById(id)) {
+            throw new RuntimeException("Distributor with ID " + id + " does not exist.");
+        }
+        distributorRepo.deleteById(id);
+    }
 
 }
 

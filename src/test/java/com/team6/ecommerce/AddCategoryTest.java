@@ -20,7 +20,7 @@ public class AddCategoryTest {
 
         when(categoryRepository.save(newCategory)).thenReturn(newCategory);
 
-        CategoryService categoryService = new CategoryService(categoryRepository);
+        CategoryService categoryService = new CategoryService(categoryRepository, null);
 
         // Act
         Category result = categoryService.save(newCategory);
