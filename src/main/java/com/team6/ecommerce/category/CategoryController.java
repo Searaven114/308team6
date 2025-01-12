@@ -17,7 +17,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @DeleteMapping("/{categoryId}")
-    @Secured("ROLE_ADMIN") //TODO
+    @Secured("ROLE_PRODUCTMANAGER") //TODO
     public ResponseEntity<?> deleteCategory(@PathVariable String categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok("Category and related products deleted successfully.");
@@ -25,7 +25,7 @@ public class CategoryController {
 
 
     @PostMapping("/create")
-    @Secured("ROLE_ADMIN") // Restrict to admin users
+    @Secured("ROLE_PRODUCTMANAGER") // Restrict to admin users
     public ResponseEntity<?> createCategory(@RequestBody Category category) {
         try {
             Category createdCategory = categoryService.createCategory(category);
