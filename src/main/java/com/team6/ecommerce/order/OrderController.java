@@ -156,4 +156,23 @@ public class OrderController {
     }
 
 
+    @PatchMapping("/{orderId}/request-refund")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> requestRefund(@PathVariable String orderId) {
+        log.info("[OrderController][requestRefund] Requesting refund for order ID: {}", orderId);
+
+        try {
+            String result = orderService.requestRefund(orderId);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            log.error("[OrderController][requestRefund] Validation failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("[OrderController][requestRefund] Processing failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
+
 }

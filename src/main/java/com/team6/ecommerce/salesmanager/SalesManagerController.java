@@ -5,6 +5,8 @@ import com.team6.ecommerce.exception.ProductNotFoundException;
 import com.team6.ecommerce.invoice.Invoice;
 import com.team6.ecommerce.invoice.InvoiceService;
 import com.team6.ecommerce.notification.NotificationService;
+import com.team6.ecommerce.order.Order;
+import com.team6.ecommerce.order.OrderService;
 import com.team6.ecommerce.product.Product;
 import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.product.ProductService;
@@ -32,6 +34,7 @@ public class SalesManagerController {
     private final ProductRepository productRepo;
     private final NotificationService notificationService;
     private final InvoiceService invoiceService;
+    private final OrderService orderService;
 
     @Secured({"ROLE_SALESMANAGER", "ROLE_ADMIN"})
     @PostMapping("/product/{id}/update-price/{price}")
@@ -103,6 +106,37 @@ public class SalesManagerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating PDF");
         }
     }
+
+
+    @Secured({"ROLE_SALESMANAGER"})
+    @GetMapping("/refunds/pending")
+    public ResponseEntity<?> viewPendingRefunds() {
+        log.info("[OrderController][viewPendingRefunds] Fetching pending refunds.");
+
+        List<Order> pendingRefunds = orderService.getPendingRefunds();
+        return ResponseEntity.ok(pendingRefunds);
+    }
+
+    @Secured({"ROLE_SALESMANAGER"})
+    @PatchMapping("/{orderId}/process-refund")
+    public ResponseEntity<?> processRefund(
+            @PathVariable String orderId,
+            @RequestParam boolean approve) {
+        log.info("[OrderController][processRefund] Processing refund for order ID: {}, approve: {}", orderId, approve);
+
+        try {
+            String result = orderService.processRefund(orderId, approve);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            log.error("[OrderController][processRefund] Validation failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("[OrderController][processRefund] Processing failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
 
 
 

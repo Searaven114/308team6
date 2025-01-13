@@ -5,6 +5,9 @@ package com.team6.ecommerce.order;
 import com.team6.ecommerce.address.Address;
 import com.team6.ecommerce.cart.Cart;
 import com.team6.ecommerce.cartitem.CartItem;
+import com.team6.ecommerce.mail.MailService;
+import com.team6.ecommerce.product.Product;
+import com.team6.ecommerce.product.ProductRepository;
 import com.team6.ecommerce.user.User;
 import com.team6.ecommerce.user.UserRepository;
 import com.team6.ecommerce.user.UserService;
@@ -31,6 +34,8 @@ public class OrderService {
     private final OrderRepository orderRepo;
     private final UserService userService;
     private final UserRepository userRepo;
+    private final ProductRepository productRepo;
+    private final MailService mailService;
 
 
     @Secured({"ROLE_ADMIN"})
@@ -190,6 +195,142 @@ public class OrderService {
         log.info("[OrderService][createOrder] Order created with ID: {}", order.getId());
         return order;
     }
+
+
+    @Transactional
+    public String requestRefund(String orderId) {
+        log.info("[OrderService][requestRefund] Requesting refund for order ID: {}", orderId);
+
+        // Fetch the order
+        Optional<Order> orderOpt = orderRepo.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            throw new IllegalArgumentException("Order not found.");
+        }
+        Order order = orderOpt.get();
+
+        // Validate if the order is eligible for refund (must not be already refunded)
+        if (order.getOrderStatus().equals(OrderStatus.REFUNDED)) {
+            throw new IllegalArgumentException("This order has already been refunded.");
+        }
+
+        long daysSincePurchase = (new Date().getTime() - order.getCreatedAt().getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSincePurchase > 30) {
+            throw new IllegalArgumentException("Refund window expired. Orders must be refunded within 30 days.");
+        }
+
+        // Mark the order as pending refund
+        order.setOrderStatus(OrderStatus.PENDING_REFUND);
+        orderRepo.save(order);
+
+        log.info("[OrderService][requestRefund] Refund request recorded for order ID: {}", orderId);
+        return "Refund request recorded successfully.";
+    }
+
+
+    public List<Order> getPendingRefunds() {
+        log.info("[OrderService][getPendingRefunds] Fetching all orders with status PENDING_REFUND.");
+
+        return orderRepo.findAllByOrderStatus(OrderStatus.PENDING_REFUND);
+    }
+
+
+//    @Transactional
+//    public String processRefund(String orderId, boolean approve) {
+//        log.info("[OrderService][processRefund] Processing refund for order ID: {}, approve: {}", orderId, approve);
+//
+//        // Fetch the order
+//        Optional<Order> orderOpt = orderRepo.findById(orderId);
+//        if (orderOpt.isEmpty()) {
+//            throw new IllegalArgumentException("Order not found.");
+//        }
+//        Order order = orderOpt.get();
+//
+//        // Check the refund status
+//        if (!order.getOrderStatus().equals(OrderStatus.PENDING_REFUND)) {
+//            throw new IllegalArgumentException("Order is not pending a refund.");
+//        }
+//
+//        if (approve) {
+//            // Validate product and quantities before processing the refund
+//            for (CartItem cartItem : order.getCart().getCartItems()) {
+//                Product product = productRepo.findById(cartItem.getProduct().getId())
+//                        .orElseThrow(() -> new RuntimeException("Product not found: " + cartItem.getProduct().getId()));
+//
+//                // Ensure the stock increment matches the cartItem quantity
+//                int adjustedStock = product.getQuantityInStock() + cartItem.getQuantity();
+//                product.setQuantityInStock(adjustedStock);
+//                productRepo.save(product);
+//            }
+//
+//            // Update order status to REFUNDED
+//            order.setOrderStatus(OrderStatus.REFUNDED);
+//            orderRepo.save(order);
+//
+//            log.info("[OrderService][processRefund] Refund approved for order ID: {}", orderId);
+//            return "Refund approved and processed successfully.";
+//        } else {
+//            // If refund is disapproved, reset status to PROCESSING
+//            order.setOrderStatus(OrderStatus.PROCESSING);
+//            orderRepo.save(order);
+//
+//            log.info("[OrderService][processRefund] Refund disapproved for order ID: {}", orderId);
+//            return "Refund disapproved.";
+//        }
+//    }
+
+
+    @Transactional
+    public String processRefund(String orderId, boolean approve) {
+        log.info("[OrderService][processRefund] Processing refund for order ID: {}, approve: {}", orderId, approve);
+
+        // Fetch the order
+        Optional<Order> orderOpt = orderRepo.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            throw new IllegalArgumentException("Order not found.");
+        }
+        Order order = orderOpt.get();
+
+        // Check the refund status
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING_REFUND)) {
+            throw new IllegalArgumentException("Order is not pending a refund.");
+        }
+
+        if (approve) {
+            // Validate product and quantities before processing the refund
+            for (CartItem cartItem : order.getCart().getCartItems()) {
+                Product product = productRepo.findById(cartItem.getProduct().getId())
+                        .orElseThrow(() -> new RuntimeException("Product not found: " + cartItem.getProduct().getId()));
+
+                // Ensure the stock increment matches the cartItem quantity
+                int adjustedStock = product.getQuantityInStock() + cartItem.getQuantity();
+                product.setQuantityInStock(adjustedStock);
+                productRepo.save(product);
+            }
+
+            // Update order status to REFUNDED
+            order.setOrderStatus(OrderStatus.REFUNDED);
+            orderRepo.save(order);
+
+            // Notify the user via email
+            User user = userRepo.findById(order.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found: " + order.getUserId()));
+            mailService.sendRefundApprovalMail(user.getEmail(), orderId);
+
+            log.info("[OrderService][processRefund] Refund approved for order ID: {}", orderId);
+            return "Refund approved and processed successfully.";
+        } else {
+            // If refund is disapproved, reset status to PROCESSING
+            order.setOrderStatus(OrderStatus.PROCESSING);
+            orderRepo.save(order);
+
+            log.info("[OrderService][processRefund] Refund disapproved for order ID: {}", orderId);
+            return "Refund disapproved.";
+        }
+    }
+
+
+
+
 }
 
 

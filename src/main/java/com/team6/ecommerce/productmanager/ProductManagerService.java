@@ -98,6 +98,7 @@ public class ProductManagerService {
 
     }
 
+    //old
     @Transactional
     @Secured({"ROLE_PRODUCTMANAGER"})
     public Product updateProductStock(String productId, int quantity) {

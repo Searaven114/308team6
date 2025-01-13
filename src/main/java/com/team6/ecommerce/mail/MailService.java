@@ -51,6 +51,28 @@ public class MailService {
     }
 
 
+    public void sendRefundApprovalMail(String recipient, String orderId) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(recipient);
+            helper.setSubject("Refund Approved");
+            helper.setText(String.format(
+                    "Dear Customer,\n\nYour refund request for order ID %s has been approved and processed successfully. "
+                            + "You should receive the refund shortly.\n\nThank you for shopping with us!\n\nBest regards,\nTeam6 eCommerce.",
+                    orderId));
+
+            mailSender.send(message);
+            log.info("[MailService][sendRefundApprovalMail] Refund approval email sent to {}", recipient);
+        } catch (MessagingException e) {
+            log.error("[MailService][sendRefundApprovalMail] Failed to send refund approval email to {}", recipient, e);
+            throw new RuntimeException("Failed to send refund approval email", e);
+        }
+    }
+
+
+
 
 
 }
