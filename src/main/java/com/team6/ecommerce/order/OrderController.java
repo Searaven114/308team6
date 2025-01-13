@@ -73,15 +73,6 @@ public class OrderController {
         return ResponseEntity.ok(order.get());
     }
 
-
-
-    /**
-     * Endpoint to fetch orders by their status.
-     *
-     * @param status The Order Status
-     * @return List of orders with the specified status
-     */
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/status/{status}")
     public ResponseEntity<?> getOrdersByStatus(@PathVariable OrderStatus status) {
         log.info("[OrderController][getOrdersByStatus] Fetching orders with status: {}", status);
@@ -118,7 +109,6 @@ public class OrderController {
     }
 
 
-    @PreAuthorize("hasRole('PRODUCT_MANAGER')")
     @PatchMapping("/{orderId}/status")
     public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId, @RequestParam int statusCode) {
         log.info("[OrderController][updateOrderStatus] Request to update status of order ID: {} with statusCode: {}", orderId, statusCode);
