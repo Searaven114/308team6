@@ -117,4 +117,53 @@ public class OrderController {
         return user.getId();
     }
 
+
+    @PreAuthorize("hasRole('PRODUCT_MANAGER')")
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId, @RequestParam int statusCode) {
+        log.info("[OrderController][updateOrderStatus] Request to update status of order ID: {} with statusCode: {}", orderId, statusCode);
+
+        // Validate orderId
+        if (orderId == null || orderId.trim().isEmpty()) {
+            log.error("[OrderController][updateOrderStatus] Invalid orderId provided.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid order ID provided.");
+        }
+
+        // Map the statusCode to OrderStatus
+        OrderStatus newStatus;
+        switch (statusCode) {
+            case 1:
+                newStatus = OrderStatus.IN_TRANSIT;
+                break;
+            case 2:
+                newStatus = OrderStatus.PROCESSING;
+                break;
+            case 3:
+                newStatus = OrderStatus.DELIVERED;
+                break;
+            case 4:
+                newStatus = OrderStatus.REFUNDED;
+                break;
+            default:
+                log.error("[OrderController][updateOrderStatus] Invalid statusCode provided: {}", statusCode);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid status code. Accepted values are 1 (In Transit), 2 (Processing), 3 (Delivered), 4 (Refunded).");
+        }
+
+        // Fetch the order
+        Optional<Order> orderOpt = orderRepo.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            log.info("[OrderController][updateOrderStatus] No order found with ID: {}", orderId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found.");
+        }
+
+        // Update the status
+        Order order = orderOpt.get();
+        order.setOrderStatus(newStatus);
+        orderRepo.save(order);
+
+        log.info("[OrderController][updateOrderStatus] Updated status of order ID: {} to {}", orderId, newStatus);
+        return ResponseEntity.ok("Order status updated successfully to: " + newStatus);
+    }
+
+
 }
