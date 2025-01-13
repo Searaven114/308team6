@@ -130,7 +130,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true); // Allow credentials (cookies, headers)
         config.setAllowedOrigins(List.of("http://localhost:5173")); // Allow requests from the frontend
         config.setAllowedHeaders(List.of("*")); // Allow all headers
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow common HTTP methods
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // Allow common HTTP methods
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config); // Apply the CORS configuration globally
         return source;
