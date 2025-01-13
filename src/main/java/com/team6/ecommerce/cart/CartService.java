@@ -333,8 +333,11 @@ public class CartService {
                         .build())
                 .toList();
 
-        //TODO address seçimi modülerize edilmeli, şu haliyle kullanıcının eldeki ilk addressini alıyor.
-        Address selectedAddress = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getAddresses().get(0);
+        //Address selectedAddress = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getAddresses().get();
+        Address selectedAddress = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .getAddresses()
+                .get(userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getAddresses().size() - 1);
 
         for (CartItem2 cartItem2 : cartItem2List) {
             deliveryListService.createDeliveryEntry(userId,cartItem2,selectedAddress);
