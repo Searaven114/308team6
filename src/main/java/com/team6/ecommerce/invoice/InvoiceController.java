@@ -8,14 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@Secured({"ROLE_SALESMANAGER"})
+@Secured({"ROLE_SALESMANAGER", "ROLE_PRODUCTMANAGER"})
 @AllArgsConstructor
 @RestController("/api")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
-
-
 
     @GetMapping("/invoices/{id}")
     public ResponseEntity<Invoice> getInvoiceById(@PathVariable String id) {

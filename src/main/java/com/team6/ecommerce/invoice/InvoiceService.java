@@ -24,18 +24,6 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepo;
     private final UserRepository userRepo;
 
-
-    /*public class Invoice {
-    @Id
-    private String id;
-    private String orderId;
-    private String userId;
-    private Double totalAmount;
-    private Date invoiceDate;
-    private String email;
-    private List<CartItem2> purchasedItems;
-}*/
-
     public Invoice generateInvoice(String orderId, String userId, Double totalAmount, List<CartItem2> items) {
 
         String email = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found")).getEmail();
