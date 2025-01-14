@@ -24,7 +24,7 @@ public class WishlistPopulator {
     private final ProductRepository productRepository;
     private final WishlistRepository wishlistRepository;
 
-    @PostConstruct
+    /*@PostConstruct
     public void init() {
         log.info("[WishlistPopulator] Starting wishlist population.");
 
@@ -67,5 +67,5 @@ public class WishlistPopulator {
         }
 
         log.info("[WishlistPopulator] Wishlist population completed.");
-    }
+    }*/
 }

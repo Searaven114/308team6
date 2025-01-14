@@ -108,7 +108,7 @@ public class ProductPopulator {
 
         mouseCat.ifPresent(category -> products.add(new Product(
                 "4",
-                "Logitech MX Master 3",
+                "Logitech MX Master 3 A",
                 mouseCat.get().getId(),
                 "Logitech",
                 "MX Master 3",
@@ -161,7 +161,7 @@ public class ProductPopulator {
         monitorCat.ifPresent(category -> {
             products.add(new Product(
                     "7",
-                    "Samsung Odyssey G7",
+                    "Samsung Odyssey G7 G",
                     monitorCat.get().getId(),
                     "Samsung",
                     "Odyssey G7",
@@ -198,7 +198,7 @@ public class ProductPopulator {
         mouseCat.ifPresent(category1 -> {
             products.add(new Product(
                     "9",
-                    "Razer DeathAdder V2",
+                    "Razer DeathAdder V2 C",
                     mouseCat.get().getId(),
                     "Razer",
                     "DeathAdder V2",
@@ -315,7 +315,7 @@ public class ProductPopulator {
 
         mouseCat.ifPresent(category -> products.add(new Product(
                 "16",
-                "HyperX Pulsefire FPS Pro",
+                "HyperX Pulsefire FPS Pro B",
                 mouseCat.get().getId(),
                 "HyperX",
                 "Pulsefire FPS Pro",
@@ -347,7 +347,7 @@ public class ProductPopulator {
 
         monitorCat.ifPresent(category -> products.add(new Product(
                 "18",
-                "Gigabyte Aorus FI27Q",
+                "Gigabyte Aorus FI27Q H",
                 monitorCat.get().getId(),
                 "Gigabyte",
                 "Aorus FI27Q",
@@ -363,14 +363,14 @@ public class ProductPopulator {
 
         mouseCat.ifPresent(category -> products.add(new Product(
                 "19",
-                "Cooler Master MM710",
+                "Cooler Master MM710 C",
                 mouseCat.get().getId(),
                 "Cooler Master",
                 "MM710",
                 "CMM710",
                 "Ultra-lightweight gaming mouse with honeycomb design, 16,000 DPI sensor, and RGB lighting.",
                 50,
-                49.99,
+                100,
                 true,
                 "1",
                 87,
@@ -459,7 +459,7 @@ public class ProductPopulator {
 
         monitorCat.ifPresent(category -> products.add(new Product(
                 "25",
-                "MSI Optix MAG272C",
+                "MSI Optix MAG272C E",
                 monitorCat.get().getId(),
                 "MSI",
                 "Optix MAG272C",
@@ -507,14 +507,14 @@ public class ProductPopulator {
 
         monitorCat.ifPresent(category -> products.add(new Product(
                 "28",
-                "AOC Agon AG273QCG",
+                "AOC Agon AG273QCG F",
                 monitorCat.get().getId(),
                 "AOC",
                 "Agon AG273QCG",
                 "AOCAG273",
                 "27-inch gaming monitor with 165Hz refresh rate, G-Sync support, and QHD resolution.",
                 15,
-                599.99,
+                600,
                 true,
                 "2",
                 5,

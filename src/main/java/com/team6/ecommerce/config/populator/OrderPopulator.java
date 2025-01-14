@@ -21,8 +21,8 @@ public class OrderPopulator {
         log.info("[OrderPopulator] Starting order population.");
 
 
-        orderRepo.deleteAll();
-        log.info("[OrderPopulator] Cleared Order collection.");
+        //orderRepo.deleteAll();
+        //log.info("[OrderPopulator] Cleared Order collection.");
 
     }
 

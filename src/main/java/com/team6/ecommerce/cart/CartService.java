@@ -355,7 +355,7 @@ public class CartService {
          log.info("[CartService][Checkout] Invoice created for user ID: {} with invoice ID: {}", userId, savedInvoice.getId());
 
         // Delegating user notification to notification service, if this line is uncommented a mail will be sent to the user regarding the purchase
-        //notificationService.notifyUserWithInvoice(invoice);
+        notificationService.notifyUserWithInvoice(savedInvoice);
 
         // Prepare CheckoutResponseDTO
         List<CartItem> purchasedItems = new ArrayList<>(cart.getCartItems()); // Create a copy of cart items before clearing

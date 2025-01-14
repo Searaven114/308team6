@@ -18,9 +18,9 @@ public class DeliveryPopulator {
     @PostConstruct
     public void init() {
 
-        deliveryListRepository.deleteAll();
+        //deliveryListRepository.deleteAll();
 
-        log.info("[DeliveryPopulator] Cleared deliveryList collection.");
+        //log.info("[DeliveryPopulator] Cleared deliveryList collection.");
 
         // Delivery entryleri işlem sırasında düşecek db ye, fake gen yok.
     }

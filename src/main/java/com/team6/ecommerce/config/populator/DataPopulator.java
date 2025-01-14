@@ -101,14 +101,12 @@ public class DataPopulator {
         int number = fake.number().numberBetween(1, 10);
 
         if (number >= 4) {
-            addresses.add(new Address(fake.address().streetName(), fake.address().city(), fake.address().zipCode(), fake.address().country()));
+            addresses.add(new Address("asd", "asd", "asd", "asd"));
         } else if (number < 3) {
-            addresses.add(new Address(fake.address().streetName(), fake.address().city(), fake.address().zipCode(), fake.address().country()));
-            addresses.add(new Address("Home", fake.address().streetName(), fake.address().city(), fake.address().zipCode(), fake.address().country(), fake.lorem().characters(30)));
+            addresses.add(new Address("asd", "asd", "asd", "asd"));
+            addresses.add(new Address("asd", "asd", "asd", "asd"));
         } else {
-            addresses.add(new Address(fake.address().streetName(), fake.address().city(), fake.address().zipCode(), fake.address().country()));
-            addresses.add(new Address(fake.address().streetName(), fake.address().city(), fake.address().zipCode(), fake.address().country()));
-            addresses.add(new Address("Home", fake.address().streetName(), fake.address().city(), fake.address().zipCode(), fake.address().country(), fake.lorem().characters(25)));
+            addresses.add(new Address("asd", "asd", "asd", "asd"));
         }
 
         return addresses;
@@ -136,15 +134,15 @@ public class DataPopulator {
         Map<String, List<String>> userProductMap = Map.of(
                 "customer1@example.com", List.of("1", "2"),
                 "customer2@example.com", List.of("3", "4"),
-                "d4rk1253@gmail.com", List.of("5"),
-                "bora.urasoglu2000@hotmail.com", List.of("2", "3", "4")
+                "d4rk1253@gmail.com", List.of("5")
+                //"bora.urasoglu2000@hotmail.com", List.of("2", "3", "4")
         );
 
         Map<String, List<Integer>> userQuantityMap = Map.of(
                 "customer1@example.com", List.of(2, 1),
                 "customer2@example.com", List.of(7, 99),
-                "d4rk1253@gmail.com", List.of(1),
-                "bora.urasoglu2000@hotmail.com", List.of(3, 2, 5)
+                "d4rk1253@gmail.com", List.of(1)
+                //"bora.urasoglu2000@hotmail.com", List.of(3, 2, 5)
         );
 
         List<String> productIds = userProductMap.getOrDefault(username, Collections.emptyList());
